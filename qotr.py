@@ -1,11 +1,15 @@
+# pylint: disable=W0223
+
 import os
 import uuid
 
 from collections import defaultdict
 from tornado import ioloop, web, websocket, escape
 
-# We don't need to override `data_received`
-# pylint: disable=W0223
+class MainHandler(web.RequestHandler):
+    def get(self):
+        self.render("dist/index.html")
+
 class ChatClient(websocket.WebSocketHandler):
 
     CHANNELS = defaultdict(set)
@@ -58,7 +62,9 @@ class ChatClient(websocket.WebSocketHandler):
 
 def main():
     application = web.Application([
-        (r"/([^/]+)", ChatClient),
+        (r"/", MainHandler),
+        (r'/assets/(.*)', web.StaticFileHandler, {'path': 'dist/assets'}),
+        (r"/c/([^/]+)", ChatClient),
     ], debug=True)
 
     port = int(os.environ.get("PORT", 5000))
