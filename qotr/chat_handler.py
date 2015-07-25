@@ -24,7 +24,7 @@ class ChatHandler(websocket.WebSocketHandler):
         return True
 
     def _handle_request_exception(self, e):
-        L.error(e)
+        L.exception('An error occured: %s', repr(e))
 
     # Open allows for any number arguments, unlike what pylint thinks.
     # pylint: disable=W0221
