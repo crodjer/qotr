@@ -1,10 +1,14 @@
 import json
-from enum import Enum, unique
+from enum import Enum
 
-@unique
-class MessageTypes(Enum):
-
-    salt, join, chat, part, members, error = range(6)
+MessageTypes = Enum('MessageTypes', [
+    'salt',
+    'join',
+    'chat',
+    'part',
+    'members',
+    'error'
+])
 
 class Message(object):
     '''
