@@ -34,7 +34,6 @@ class ChatHandler(websocket.WebSocketHandler):
 
         # Tell the user the channel's salt.
         self.send_salt()
-        self.broadcast(Message(MT.join, sender=self))
 
     def send_salt(self):
         Message(MT.salt, body=self.channel.salt).send(self)
@@ -98,11 +97,10 @@ class ChatHandler(websocket.WebSocketHandler):
     def on_close(self):
         if self in self.channel:
             self.channel.remove(self)
+            self.broadcast(Message(MT.part, sender=self))
 
         if not self.channel:
             try:
                 del self.CHANNELS[self.channel_id]
             except KeyError:
                 pass
-
-        self.broadcast(Message(MT.part, sender=self))
