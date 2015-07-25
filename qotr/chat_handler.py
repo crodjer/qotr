@@ -7,12 +7,6 @@ from tornado import websocket
 
 L = logging.getLogger(__name__)
 
-def send(client, message):
-    '''
-    Send the message to the client.
-    '''
-    client.write_message(message.as_json())
-
 # We don't need to override `data_received`
 # pylint: disable=W0223
 class ChatHandler(websocket.WebSocketHandler):
@@ -43,10 +37,10 @@ class ChatHandler(websocket.WebSocketHandler):
         self.broadcast(Message(MT.join, sender=self))
 
     def send_salt(self):
-        send(self, Message(MT.salt, body=self.channel.salt))
+        Message(MT.salt, body=self.channel.salt).send(self)
 
     def respond_with_error(self, error="An error occured."):
-        send(self, Message(MT.error, body=error))
+        Message(MT.error, body=error).send(self)
 
     def broadcast(self, message):
         '''
@@ -54,7 +48,7 @@ class ChatHandler(websocket.WebSocketHandler):
         '''
 
         for client in self.channel - {message.sender}:
-            send(client, message)
+            message.send(client)
 
     def handle_salt(self, message):
         '''
@@ -83,7 +77,7 @@ class ChatHandler(websocket.WebSocketHandler):
         '''
         Handle a chat message.
         '''
-        send(self, Message(MT.members, body=self.channel.members))
+        Message(MT.members, body=self.channel.members).send(self)
 
     def handle_chat(self, message):
         '''

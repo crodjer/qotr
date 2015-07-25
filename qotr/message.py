@@ -31,6 +31,12 @@ class Message(object):
             "sender": self.sender.nick if self.sender else None,
         }
 
+    def send(self, client):
+        '''
+        Send self to the client.
+        '''
+        client.write_message(self.as_json())
+
     @classmethod
     def from_object(cls, obj):
         obj['kind'] = MessageTypes[obj['kind']]
