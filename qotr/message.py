@@ -32,7 +32,7 @@ class Message(object):
         return {
             "kind": self.kind.name,
             "body": self.body,
-            "sender": self.sender.nick if self.sender else None,
+            "sender": self.sender.nick if self.sender else None
         }
 
     def send(self, client):
@@ -43,9 +43,16 @@ class Message(object):
 
     @classmethod
     def from_object(cls, obj):
-        obj['kind'] = MessageTypes[obj['kind']]
+        # No interference with the original object.
+        obj = obj.copy()
+        kind = obj["kind"]
+        if not isinstance(kind, MessageTypes):
+            obj["kind"] = MessageTypes[kind]
         return cls(**obj)
 
     @classmethod
     def from_json(cls, string):
         return cls.from_object(json.loads(string))
+
+    def __repr__(self):
+        return '<Message: {kind}-{sender}>'.format(**self.as_json())

@@ -18,3 +18,5 @@ testem.log
 
 # python
 *.pyc
+tmp
+.coverage

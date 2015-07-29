@@ -1,23 +1,10 @@
----
-language: node_js
-node_js:
-  - "0.12"
-
+language: python
 sudo: false
-
-cache:
-  directories:
-    - node_modules
-
-before_install:
-  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
-  - "npm config set spin false"
-  - "npm install -g npm@^2"
-
+python:
+  - "3.3"
+  - "3.4"
 install:
-  - npm install -g bower
-  - npm install
-  - bower install
-
-script:
-  - npm test
+  - pip install -r requirements.txt
+script: QOTR_ENV=test nosetests --with-coverage --cover-package=qotr
+after_success:
+  - coveralls
