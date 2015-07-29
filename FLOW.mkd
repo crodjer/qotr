@@ -1,0 +1,8 @@
+ - Post request to create a channel with a salt, and hashed key.
+ - Connects via websocket.
+ - Server sends the salt.
+ - Sets a nick based on the salt.
+ - Verifies that it has the key, by providing the hash. Server lets the client
+   join.
+ - All future messages are simply forwarded to the rest of clients.
+
