@@ -1,12 +1,15 @@
-from collections import defaultdict
+from .exceptions import ChannelAlreadyExists
 
-class Channel(set):
+class Channel(object):
     '''
     A communication channel.
     A set, which also stores the channel information.
     '''
 
-    salt = None
+    def __init__(self, salt, key_hash):
+        self.clients = set()
+        self.salt = salt
+        self.key_hash = key_hash
 
     @property
     def members(self):
@@ -19,10 +22,22 @@ class Channel(set):
 
 class Channels(object):
 
-    CHANNELS = defaultdict(Channel)
+    CHANNELS = {}
 
     @classmethod
     def get(cls, name):
+        return cls.CHANNELS[name]
+
+    @classmethod
+    def exists(cls, name):
+        return name in cls.CHANNELS
+
+    @classmethod
+    def create(cls, name, salt, hashed_key):
+        if cls.exists(name):
+            raise ChannelAlreadyExists()
+
+        cls.CHANNELS[name] = Channel(salt, hashed_key)
         return cls.CHANNELS[name]
 
     @classmethod
@@ -34,4 +49,4 @@ class Channels(object):
 
     @classmethod
     def reset(cls):
-        cls.CHANNELS = defaultdict(Channel)
+        cls.CHANNELS = {}

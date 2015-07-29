@@ -1,6 +1,7 @@
 import logging
 
 from qotr.config import config
+from qotr.channel_handler import ChannelHandler
 from qotr.chat_handler import ChatHandler
 from tornado import ioloop, web
 
@@ -8,7 +9,8 @@ L = logging.getLogger('qotr')
 
 def make_application():
     return web.Application([
-        (r"/([^/]+)", ChatHandler),
+        (r"/c/new", ChannelHandler),
+        (r"/c/([^/]+)", ChatHandler),
     ], debug=config.debug)
 
 if __name__ == "__main__":
