@@ -1,8 +1,8 @@
 import logging
+import uuid
 
-from collections import defaultdict
 from qotr.message import Message, MessageTypes as MT
-from qotr.channel import Channel
+from qotr.channels import Channels
 from tornado import websocket
 
 L = logging.getLogger(__name__)
@@ -10,8 +10,6 @@ L = logging.getLogger(__name__)
 # We don't need to override `data_received`
 # pylint: disable=W0223
 class ChatHandler(websocket.WebSocketHandler):
-
-    CHANNELS = defaultdict(Channel)
 
     nick = None
     channel = None
@@ -29,13 +27,12 @@ class ChatHandler(websocket.WebSocketHandler):
     # Open allows for any number arguments, unlike what pylint thinks.
     # pylint: disable=W0221
     def open(self, channel_id):
+        self.nick = str(uuid.uuid4())
         self.channel_id = channel_id
-        self.channel = self.CHANNELS[self.channel_id]
+        self.channel = Channels.get(self.channel_id)
+        self.channel.add(self)
 
         # Tell the user the channel's salt.
-        self.send_salt()
-
-    def send_salt(self):
         Message(MT.salt, body=self.channel.salt).send(self)
 
     def respond_with_error(self, error="An error occured."):
@@ -69,7 +66,7 @@ class ChatHandler(websocket.WebSocketHandler):
             self.respond_with_error("Already in channel")
 
         self.nick = message.body
-        self.channel.add(self)
+        # self.channel.add(self)
         self.broadcast(Message(MT.join, sender=self))
 
     def handle_members(self, _):
@@ -100,7 +97,7 @@ class ChatHandler(websocket.WebSocketHandler):
             self.broadcast(Message(MT.part, sender=self))
 
         if not self.channel:
-            try:
-                del self.CHANNELS[self.channel_id]
-            except KeyError:
-                pass
+            Channels.remove(self.channel_id)
+
+    def __repr__(self):
+        return 'Chat: {}@{}'.format(self.nick or '<unknown>', self.channel_id)
