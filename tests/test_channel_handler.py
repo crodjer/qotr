@@ -1,5 +1,5 @@
 import json
-from tornado import testing, httpserver
+from tornado import testing
 
 from qotr.server import make_application
 from qotr.channels import Channels
@@ -19,11 +19,12 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
     def test_create(self):
         salt = "common"
         channel_id = "test-channel"
+        key_hash = 'hmac-key'
 
         body = "&".join([
             "id={channel_id}",
             "salt={salt}",
-            "key_hash=hmac-key"
+            "key_hash={key_hash}"
         ]).format(**locals())
 
         response = json.loads(self.fetch(
@@ -35,6 +36,10 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
             "salt": salt,
             "id": channel_id
         }, response)
+
+        channel = Channels.get(channel_id)
+        self.assertEqual(salt, channel.salt)
+        self.assertEqual(key_hash, key_hash)
 
 
     def test_confict(self):
