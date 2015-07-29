@@ -14,7 +14,7 @@ def make_application():
     ], debug=config.debug)
 
 if __name__ == "__main__":
-    make_application().listen(config.port)
+    make_application().listen(config.port) # pragma: no cover
     L.debug('http://%s:%s using %s configuration', config.host, config.port,
-            config.name)
-    ioloop.IOLoop.instance().start()
+            config.name)                   # pragma: no cover
+    ioloop.IOLoop.instance().start()       # pragma: no cover

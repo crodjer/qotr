@@ -27,10 +27,8 @@ class ChatHandler(websocket.WebSocketHandler):
     # Open allows for any number arguments, unlike what pylint thinks.
     # pylint: disable=W0221
     def open(self, channel_id):
-        self.nick = str(uuid.uuid4())
         self.channel_id = channel_id
         self.channel = Channels.get(self.channel_id)
-        self.channel.add(self)
 
         # Tell the user the channel's salt.
         Message(MT.salt, body=self.channel.salt).send(self)
@@ -43,31 +41,31 @@ class ChatHandler(websocket.WebSocketHandler):
         Broadcast a message, excluding the sender if present.
         '''
 
-        for client in self.channel - {message.sender}:
+        for client in self.channel.clients - {message.sender}:
             message.send(client)
 
-    def handle_salt(self, message):
+    def handle_nick(self, message):
         '''
-        Set the server's encryption salt.
+        Handle a nick change for the client.
         '''
 
-        if self.channel.salt:
-            self.respond_with_error("Already have an encryption salt")
-        else:
-            self.channel.salt = message.body
+        self.nick = message.body
+        if self.channel.has(self):
             self.broadcast(message)
 
     def handle_join(self, message):
         '''
-        Handle a join with the nick provided in the body.
+        Handle a authentication message from the member.
         '''
 
-        if self in self.channel:
+        if self.channel.has(self):
             self.respond_with_error("Already in channel")
 
-        self.nick = message.body
-        # self.channel.add(self)
-        self.broadcast(Message(MT.join, sender=self))
+        if message.body == self.channel.key_hash:
+            self.channel.join(self)
+            message = Message(MT.join, sender=self)
+            message.send(self)
+            self.broadcast(message)
 
     def handle_members(self, _):
         '''
@@ -77,7 +75,7 @@ class ChatHandler(websocket.WebSocketHandler):
 
     def handle_chat(self, message):
         '''
-        Handle a chat message.
+        Re-broadcast any chat messages that come in.
         '''
         self.broadcast(message)
 
@@ -92,12 +90,15 @@ class ChatHandler(websocket.WebSocketHandler):
             self.respond_with_error("Invalid message kind")
 
     def on_close(self):
-        if self in self.channel:
-            self.channel.remove(self)
+        if self.channel.has(self):
+            self.channel.part(self)
             self.broadcast(Message(MT.part, sender=self))
 
-        if not self.channel:
+        if not self.channel.clients:
             Channels.remove(self.channel_id)
 
     def __repr__(self):
-        return 'Chat: {}@{}'.format(self.nick or '<unknown>', self.channel_id)
+        return 'Chat: {}@{}'.format(
+            self.nick or '<unknown>',
+            self.channel_id
+        ) # pragma: no cover

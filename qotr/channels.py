@@ -1,4 +1,4 @@
-from .exceptions import ChannelAlreadyExists
+from .exceptions import ChannelAlreadyExists, ChannelDoesNotExist
 
 class Channel(object):
     '''
@@ -11,6 +11,15 @@ class Channel(object):
         self.salt = salt
         self.key_hash = key_hash
 
+    def has(self, client):
+        return client in self.clients
+
+    def join(self, client):
+        self.clients.add(client)
+
+    def part(self, client):
+        self.clients.remove(client)
+
     @property
     def members(self):
         '''
@@ -18,7 +27,7 @@ class Channel(object):
         '''
 
         return [client.nick
-                for client in self]
+                for client in self.clients]
 
 class Channels(object):
 
@@ -26,7 +35,10 @@ class Channels(object):
 
     @classmethod
     def get(cls, name):
-        return cls.CHANNELS[name]
+        try:
+            return cls.CHANNELS[name]
+        except KeyError:
+            raise ChannelDoesNotExist()
 
     @classmethod
     def exists(cls, name):

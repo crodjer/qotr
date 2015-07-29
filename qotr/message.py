@@ -2,8 +2,9 @@ import json
 from enum import Enum
 
 MessageTypes = Enum('MessageTypes', [
-    'salt',
     'join',
+    'nick',
+    'salt',
     'chat',
     'part',
     'members',
@@ -55,4 +56,6 @@ class Message(object):
         return cls.from_object(json.loads(string))
 
     def __repr__(self):
-        return '<Message: {kind}-{sender}>'.format(**self.as_json())
+        return '<Message: {kind}-{sender}>'.format(
+            **self.as_json()
+        ) # pragma: no cover
