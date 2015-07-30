@@ -125,6 +125,13 @@ class TestChatHandler(testing.AsyncTestCase):
             Channels.get(self.channel_id)
 
     @testing.gen_test
+    def test_members(self):
+        c = yield self._mk_client('foo')
+        send(c, m('members'))
+        response = yield c.read_message()
+        self.assertEqual(m('members', ['foo']), json.loads(response))
+
+    @testing.gen_test
     def test_invalid_message_object(self):
         c = yield self._mk_client('foo')
         c.write_message('not-a-json-object')

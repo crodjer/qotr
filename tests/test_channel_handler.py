@@ -39,7 +39,7 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
 
         channel = Channels.get(channel_id)
         self.assertEqual(salt, channel.salt)
-        self.assertEqual(key_hash, key_hash)
+        self.assertEqual(key_hash, channel.key_hash)
 
 
     def test_confict(self):
