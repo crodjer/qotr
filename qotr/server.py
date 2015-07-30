@@ -16,9 +16,9 @@ class IndexHandler(web.RequestHandler):
 def make_application():
     return web.Application([
         (r"/()", IndexHandler),
-        (r"/c/([^/]+)", IndexHandler),
-        (r"/channels/new", ChannelHandler),
-        (r"/channels/([^/]+)", ChatHandler),
+        (r"/channels/([^/]+)", IndexHandler),
+        (r"/c/new", ChannelHandler),
+        (r"/c/([^/]+)", ChatHandler),
         (r"/(.*)", web.StaticFileHandler, {'path': 'dist/'})
 
     ], debug=config.debug)
