@@ -7,6 +7,6 @@ class Production(Base):
     QOTR production configuration.
     '''
 
-    host = os.environ.get('HOST')
+    host = os.environ.get('HOST') or 'localhost'
     port = os.environ.get('PORT')
     debug = False
