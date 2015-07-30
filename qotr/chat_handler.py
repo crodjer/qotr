@@ -60,8 +60,7 @@ class ChatHandler(websocket.WebSocketHandler):
 
         if self.channel.has(self):
             self.respond_with_error("Already in channel")
-
-        if message.body == self.channel.key_hash:
+        elif message.body == self.channel.key_hash:
             self.channel.join(self)
             Message(MT.join).send(self)
             self.broadcast(Message(MT.join, sender=self))
