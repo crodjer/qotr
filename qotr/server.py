@@ -1,3 +1,4 @@
+# pylint: disable=W0223, W0221
 import logging
 
 from qotr.config import config
