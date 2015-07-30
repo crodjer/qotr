@@ -6,6 +6,8 @@ class Channel(object):
     A set, which also stores the channel information.
     '''
 
+    connections = 0
+
     def __init__(self, salt, key_hash):
         self.clients = set()
         self.salt = salt

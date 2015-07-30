@@ -1,6 +1,6 @@
 import json
 
-from tornado import websocket, testing, httpserver
+from tornado import websocket, testing, httpserver, gen
 from qotr.server import make_application
 from qotr.channels import Channels
 from qotr.exceptions import ChannelDoesNotExist
@@ -28,14 +28,30 @@ class TestChatHandler(testing.AsyncTestCase):
         socket, self.port = testing.bind_unused_port()
         server.add_socket(socket)
 
-    def _c(self):
+    def _mk_connection(self):
         return websocket.websocket_connect(
             'ws://localhost:{}/c/{}'.format(self.port, self.channel_id)
         )
 
+    @gen.coroutine
+    def _mk_client(self, nick, join=True):
+        c = yield self._mk_connection()
+        # Discard the salt.
+        yield c.read_message()
+
+        if nick:
+            send(c, m('nick', nick))
+
+        if join:
+            send(c, m('join', self.key_hash))
+            # Discard the join message
+            yield c.read_message() # C1's join
+
+        return c
+
     @testing.gen_test
     def test_connect(self):
-        c = yield self._c()
+        c = yield self._mk_connection()
         response = yield c.read_message()
         message = json.loads(response)
 
@@ -43,64 +59,36 @@ class TestChatHandler(testing.AsyncTestCase):
         self.assertEqual(self.salt, message['body'])
 
     @testing.gen_test
-    def test_auth(self):
+    def test_join(self):
         channel = Channels.get(self.channel_id)
         self.assertEqual(0, len(channel.clients))
 
-        c1 = yield self._c()
-        c2 = yield self._c()
-
-        # Discard the salts.
-        yield c1.read_message()
-        yield c2.read_message()
-
-        send(c1, m('join', self.key_hash))
-        send(c2, m('join', self.key_hash))
-
-        yield c1.read_message()
-        yield c2.read_message()
+        c1 = yield self._mk_client('foo')
+        yield self._mk_client('bar')
+        yield c1.read_message() # C2's join
 
         self.assertEqual(2, len(channel.clients))
-
 
     @testing.gen_test
     def test_nick(self):
         channel = Channels.get(self.channel_id)
-        nick = 'foo'
-        self.assertEqual(0, len(channel.clients))
+        nick_1 = 'foo'
+        nick_2 = 'bar'
 
-        c = yield self._c()
-        yield c.read_message()
+        c1 = yield self._mk_client(nick_1)
+        yield self._mk_client(nick_2)
+        yield c1.read_message() # C2's join
 
-        send(c, m('nick', nick))
-        send(c, m('join', self.key_hash))
-        yield c.read_message()
-
-        self.assertEqual([nick], channel.members)
-
+        self.assertEqual([nick_1, nick_2], channel.members)
 
     @testing.gen_test
     def test_chat(self):
         channel = Channels.get(self.channel_id)
         self.assertEqual(0, len(channel.clients))
 
-        c1 = yield self._c()
-        c2 = yield self._c()
-
-        # Discard the salts.
-        yield c1.read_message()
-        yield c2.read_message()
-
-        send(c1, m('nick', 'foo'))
-        send(c2, m('nick', 'bar'))
-        send(c1, m('join', self.key_hash))
-        send(c2, m('join', self.key_hash))
-
-        # Own and the other's join messagse. c2 gets it first because of the
-        # way tornado works.
-        yield c1.read_message()
-        yield c2.read_message()
-        yield c2.read_message()
+        c1 = yield self._mk_client('foo')
+        c2 = yield self._mk_client('bar')
+        yield c1.read_message() # C2's join
 
         send(c1, m('chat', 'hey!'))
         response = yield c2.read_message()
@@ -116,23 +104,9 @@ class TestChatHandler(testing.AsyncTestCase):
         channel = Channels.get(self.channel_id)
         self.assertEqual(0, len(channel.clients))
 
-        c1 = yield self._c()
-        c2 = yield self._c()
-
-        # Discard the salts.
-        yield c1.read_message()
-        yield c2.read_message()
-
-        send(c1, m('nick', 'foo'))
-        send(c2, m('nick', 'bar'))
-        send(c1, m('join', self.key_hash))
-        send(c2, m('join', self.key_hash))
-
-        # Own and the other's join messagse. c2 gets it first because of the
-        # way tornado works.
-        yield c1.read_message()
-        yield c2.read_message()
-        yield c2.read_message()
+        c1 = yield self._mk_client('foo')
+        c2 = yield self._mk_client('bar')
+        yield c1.read_message() # C2's join
 
         c2.close()
         response = yield c1.read_message()
@@ -143,7 +117,9 @@ class TestChatHandler(testing.AsyncTestCase):
             'body': None
         }, json.loads(response))
 
-        # Somehow need to figure out how to wait for the raise here.
-        # with self.assertRaises(ChannelDoesNotExist) as context:
-        #     c1.close()
-        #     Channels.get(self.channel_id)
+        c1.close()
+
+        # Wait for the channel to be removed.
+        yield gen.sleep(0.001)
+        with self.assertRaises(ChannelDoesNotExist):
+            Channels.get(self.channel_id)

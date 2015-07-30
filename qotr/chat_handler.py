@@ -3,7 +3,7 @@ import uuid
 
 from qotr.message import Message, MessageTypes as MT
 from qotr.channels import Channels
-from tornado import websocket
+from tornado import websocket, gen
 
 L = logging.getLogger(__name__)
 
@@ -29,6 +29,7 @@ class ChatHandler(websocket.WebSocketHandler):
     def open(self, channel_id):
         self.channel_id = channel_id
         self.channel = Channels.get(self.channel_id)
+        self.channel.connections += 1
 
         # Tell the user the channel's salt.
         Message(MT.salt, body=self.channel.salt).send(self)
@@ -63,9 +64,8 @@ class ChatHandler(websocket.WebSocketHandler):
 
         if message.body == self.channel.key_hash:
             self.channel.join(self)
-            message = Message(MT.join, sender=self)
-            message.send(self)
-            self.broadcast(message)
+            Message(MT.join).send(self)
+            self.broadcast(Message(MT.join, sender=self))
 
     def handle_members(self, _):
         '''
@@ -89,12 +89,19 @@ class ChatHandler(websocket.WebSocketHandler):
         except KeyError:
             self.respond_with_error("Invalid message kind")
 
+    @gen.coroutine
     def on_close(self):
+        if not self.channel:
+            return
+
         if self.channel.has(self):
             self.channel.part(self)
             self.broadcast(Message(MT.part, sender=self))
 
-        if not self.channel.clients:
+        self.channel.connections -= 1
+
+        if self.channel.connections <= 0:
+            L.debug('Deleting channel: %s', self.channel_id)
             Channels.remove(self.channel_id)
 
     def __repr__(self):
