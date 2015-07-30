@@ -79,7 +79,7 @@ class TestChatHandler(testing.AsyncTestCase):
         yield self._mk_client(nick_2)
         yield c1.read_message() # C2's join
 
-        self.assertEqual([nick_1, nick_2], channel.members)
+        self.assertEqual({nick_1, nick_2}, set(channel.members))
 
     @testing.gen_test
     def test_chat(self):

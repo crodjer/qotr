@@ -1,5 +1,4 @@
 import logging
-import uuid
 
 from qotr.message import Message, MessageTypes as MT
 from qotr.channels import Channels
