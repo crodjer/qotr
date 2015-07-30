@@ -2,6 +2,7 @@ import logging
 
 from qotr.message import Message, MessageTypes as MT
 from qotr.channels import Channels
+from qotr.exceptions import ChannelDoesNotExist
 from tornado import websocket, gen
 
 L = logging.getLogger(__name__)
@@ -27,11 +28,16 @@ class ChatHandler(websocket.WebSocketHandler):
     # pylint: disable=W0221
     def open(self, channel_id):
         self.channel_id = channel_id
-        self.channel = Channels.get(self.channel_id)
-        self.channel.connections += 1
+        try:
+            self.channel = Channels.get(self.channel_id)
+            self.channel.connections += 1
 
-        # Tell the user the channel's salt.
-        Message(MT.salt, body=self.channel.salt).send(self)
+            # Tell the user the channel's salt.
+            Message(MT.salt, body=self.channel.salt).send(self)
+        except ChannelDoesNotExist:
+            self.respond_with_error("Channel does not exist")
+            self.channel.connections -= 1
+            self.close()
 
     def respond_with_error(self, error="An error occured."):
         Message(MT.error, body=error).send(self)
