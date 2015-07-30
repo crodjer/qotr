@@ -123,3 +123,24 @@ class TestChatHandler(testing.AsyncTestCase):
         yield gen.sleep(0.001)
         with self.assertRaises(ChannelDoesNotExist):
             Channels.get(self.channel_id)
+
+    @testing.gen_test
+    def test_invalid_message_object(self):
+        c = yield self._mk_client('foo')
+        c.write_message('not-a-json-object')
+        response = yield c.read_message()
+        self.assertEqual('error', json.loads(response)['kind'])
+
+    @testing.gen_test
+    def test_invalid_kind(self):
+        c = yield self._mk_client('foo')
+        send(c, m('invalid-kind'))
+        response = yield c.read_message()
+        self.assertEqual('error', json.loads(response)['kind'])
+
+    @testing.gen_test
+    def test_double_join(self):
+        c = yield self._mk_client('foo')
+        send(c, m('join'))
+        response = yield c.read_message()
+        self.assertEqual('error', json.loads(response)['kind'])
