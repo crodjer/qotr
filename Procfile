@@ -1,1 +1,1 @@
-web: python qotr.py
+web: python qotr.server
