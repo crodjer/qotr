@@ -104,11 +104,11 @@ class ChatHandler(websocket.WebSocketHandler):
         if not self.channel:
             return
 
+        self.channel.connections -= 1
+
         if self.channel.has(self):
             self.channel.part(self)
             self.broadcast(Message(MT.part, sender=self))
-
-        self.channel.connections -= 1
 
         if self.channel.connections <= 0:
             L.debug('Deleting channel: %s', self.channel_id)
