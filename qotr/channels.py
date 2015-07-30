@@ -1,3 +1,4 @@
+from hashids import Hashids
 from .exceptions import ChannelAlreadyExists, ChannelDoesNotExist
 
 class Channel(object):
@@ -7,11 +8,18 @@ class Channel(object):
     '''
 
     connections = 0
+    id_source = 0
+
 
     def __init__(self, salt, key_hash):
         self.clients = set()
         self.salt = salt
         self.key_hash = key_hash
+        self.hash_ids = Hashids(salt=salt, min_length=6)
+
+    def new_id(self):
+        self.id_source += 1
+        return self.hash_ids.encode(self.id_source)
 
     def has(self, client):
         return client in self.clients
