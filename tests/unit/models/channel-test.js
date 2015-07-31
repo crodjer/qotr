@@ -1,12 +1,14 @@
-import { moduleForModel, test } from 'ember-qunit';
+import { moduleFor, test } from 'ember-qunit';
 
-moduleForModel('channel', 'Unit | Model | channel', {
+moduleFor('model:channel', 'Unit | Model | channel', {
   // Specify the other units that are required for this test.
   needs: []
 });
 
-test('it exists', function(assert) {
-  var model = this.subject();
-  // var store = this.store();
-  assert.ok(!!model);
+test('it can be created', function(assert) {
+  var channel = this.subject({
+    id: 'foo'
+  });
+
+  assert.equal(channel.id, 'foo');
 });
