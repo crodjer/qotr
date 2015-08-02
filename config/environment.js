@@ -29,6 +29,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'test') {
+    ENV.QOTR_PORT = 5000;
     // Testem prefers this...
     ENV.baseURL = '/';
     ENV.locationType = 'none';
@@ -41,7 +42,6 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    ENV.QOTR_PORT = 5000;
   }
 
   return ENV;
