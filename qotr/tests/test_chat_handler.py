@@ -1,17 +1,17 @@
 import json
 
-from tornado import websocket, testing, httpserver, gen
-from qotr.server import make_application
+from tornado import websocket, testing, gen
 from qotr.channels import Channels
 from qotr.exceptions import ChannelDoesNotExist
 
+from .base_async_test import BaseAsyncTest
 from .utils import m
 
 def send(client, obj):
     return client.write_message(json.dumps(obj))
 
 # This test uses coroutine style.
-class TestChatHandler(testing.AsyncTestCase):
+class TestChatHandler(BaseAsyncTest):
 
     port = None
     channel_id = 'test-channel'
@@ -20,13 +20,7 @@ class TestChatHandler(testing.AsyncTestCase):
 
     def setUp(self):
         super(TestChatHandler, self).setUp()
-        Channels.reset()
         Channels.create(self.channel_id, self.salt, self.key_hash)
-
-        application = make_application()
-        server = httpserver.HTTPServer(application)
-        socket, self.port = testing.bind_unused_port()
-        server.add_socket(socket)
 
     def _mk_connection(self):
         return websocket.websocket_connect(

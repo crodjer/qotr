@@ -1,5 +1,11 @@
+import logging
+
+from datetime import datetime, timedelta
 from hashids import Hashids
+from .config import config
 from .exceptions import ChannelAlreadyExists, ChannelDoesNotExist
+
+L = logging.getLogger(__name__)
 
 class Channel(object):
     '''
@@ -16,6 +22,7 @@ class Channel(object):
         self.salt = salt
         self.key_hash = key_hash
         self.hash_ids = Hashids(salt=salt, min_length=6)
+        self.created_at = datetime.now()
 
     def new_id(self):
         self.id_source += 1
@@ -29,6 +36,9 @@ class Channel(object):
 
     def part(self, client):
         self.clients.remove(client)
+
+    def is_empty(self):
+        return not self.clients
 
     @property
     def members(self):
@@ -72,3 +82,12 @@ class Channels(object):
     @classmethod
     def reset(cls):
         cls.CHANNELS = {}
+
+    @classmethod
+    def cleanup(cls):
+        delta = timedelta(seconds=config.channel_timeout)
+        now = datetime.now()
+
+        for key, channel in cls.CHANNELS.items():
+            if channel.is_empty() and delta > (now - channel.created_at):
+                cls.remove(key)

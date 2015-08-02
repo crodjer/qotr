@@ -2,6 +2,7 @@
 import logging
 
 from qotr.config import config
+from qotr.channels import Channels
 from qotr.channel_handler import ChannelHandler
 from qotr.chat_handler import ChatHandler
 from tornado import ioloop, web
@@ -14,6 +15,9 @@ class IndexHandler(web.RequestHandler):
         self.render('../dist/index.html')
 
 def make_application():
+    ioloop.PeriodicCallback(Channels.cleanup,
+                            config.cleanup_period * 1000).start()
+
     return web.Application([
         (r"/()", IndexHandler),
         (r"/channels/([^/]+)", IndexHandler),

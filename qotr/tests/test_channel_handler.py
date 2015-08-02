@@ -44,8 +44,8 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
 
     def test_confict(self):
         body = "&".join([
-            "id=common",
-            "salt=test-channel",
+            "id=test-channel",
+            "salt=common",
             "key_hash=hmac-key"
         ])
 

@@ -9,6 +9,9 @@ class Base(object):
     port = None
     debug = False
     allowed_origin = "*"
+    channel_timeout = 600 # A channel is kept for 10 minutes.
+    cleanup_period = channel_timeout / 2
+
     log_config = {
         'version': 1,
         'disable_existing_loggers': False,

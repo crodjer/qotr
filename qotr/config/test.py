@@ -13,3 +13,5 @@ class Test(Base):
         'version': 1,
         'disable_existing_loggers': True
     }
+    channel_timeout = 0.1
+    cleanup_period = channel_timeout / 2

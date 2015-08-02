@@ -1,9 +1,13 @@
 import unittest
 
 from qotr.channels import Channels
+from qotr.config import config
 from qotr.exceptions import ChannelAlreadyExists, ChannelDoesNotExist
 
+from tornado import testing, gen
 from unittest.mock import Mock
+
+from .base_async_test import BaseAsyncTest
 
 class TestChannels(unittest.TestCase):
 
@@ -47,3 +51,21 @@ class TestChannels(unittest.TestCase):
         self.assertTrue(Channels.exists(self.channel_id))
         Channels.reset()
         self.assertFalse(Channels.exists(self.channel_id))
+
+class TestChannelDeletion(BaseAsyncTest):
+
+    @testing.gen_test
+    def test_channel_delete(self):
+        key = 'test-channel'
+        Channels.create(key, 'common', None)
+        yield gen.sleep(config.cleanup_period * 1.1)
+        self.assertFalse(Channels.exists(key))
+
+
+    @testing.gen_test
+    def test_channel_no_delete(self):
+        key = 'test-channel'
+        c = Channels.create(key, 'common', None)
+        c.join(Mock(nick='foo'))
+        yield gen.sleep(config.cleanup_period * 1.1)
+        self.assertTrue(Channels.exists(key))
