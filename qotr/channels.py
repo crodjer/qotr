@@ -88,6 +88,6 @@ class Channels(object):
         delta = timedelta(seconds=config.channel_timeout)
         now = datetime.now()
 
-        for key, channel in cls.CHANNELS.items():
+        for key, channel in set(cls.CHANNELS.items()):
             if channel.is_empty() and delta > (now - channel.created_at):
                 cls.remove(key)
