@@ -8,6 +8,7 @@ class Base(object):
     host = None
     port = None
     debug = False
+    allowed_origin = "*"
     log_config = {
         'version': 1,
         'disable_existing_loggers': False,

@@ -2,6 +2,8 @@ import logging
 
 from .channels import Channels
 from .exceptions import ChannelAlreadyExists
+from .config import config, Production
+
 from tornado import web
 
 L = logging.getLogger(__name__)
@@ -13,6 +15,13 @@ class ChannelHandler(web.RequestHandler):
     '''
 
     def set_default_headers(self):
+        if config.allowed_origin:
+
+            self.set_header("Access-Control-Allow-Origin",
+                            config.allowed_origin)
+            self.set_header("Access-Control-Allow-Methods", "POST")
+            self.set_header("Access-Control-Allow-Headers", "Content-Type")
+
         self.set_header('Content-Type', 'application/json')
 
     def post(self):
