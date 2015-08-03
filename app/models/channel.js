@@ -14,18 +14,14 @@ var host = window.location.hostname,
 var e64 = forge.util.encode64,
     d64 = forge.util.decode64;
 
-function hmac (str) {
-    var _hmac = forge.hmac.create();
-    _hmac.start('sha256', str);
-    return _hmac.digest().toHex();
-}
-
 export default Ember.Object.extend({
   id: null,
   id_b64: null,
+  nick: null,
   salt: null,
   password: null,
   socket: null,
+  members: null,
   messages: null,
 
   init: function () {
@@ -36,15 +32,16 @@ export default Ember.Object.extend({
     }
 
     this.id_b64 = e64(this.id);
+    this.members = Ember.A();
     this.messages = Ember.A();
+
+    if (!this.get('nick')) {
+      this.set('nick', shortid.generate());
+    }
   },
 
   key: Ember.computed('salt', 'password', function () {
     return forge.pkcs5.pbkdf2(this.get('password'), this.get('salt'), 32, 32);
-  }),
-
-  key_hash: Ember.computed('key', function () {
-    return hmac(this.get('key'));
   }),
 
   start: function () {
@@ -93,8 +90,8 @@ export default Ember.Object.extend({
     return ptext.output.data;
   },
 
-  send: function (kind, body, noEncrypt) {
-    if (body !== null && !noEncrypt) {
+  send: function (kind, body) {
+    if (body !== null) {
       body = this.encrypt(body);
     }
     this.socket.send(JSON.stringify({
@@ -104,16 +101,20 @@ export default Ember.Object.extend({
   },
 
   onServerMessage: function (message) {
+    var that = this;
+
     switch(message.kind) {
     case "salt":
       this.set('salt', d64(message.body));
-      this.send('join', this.get('key_hash'), true);
-      break;
-    case "join":
-      this.set('nick', this.decrypt(message.body));
+      this.send('join', this.get('nick'));
+      Ember.run.later(function () {
+        that.send('members');
+      });
       break;
     case "members":
-      this.members = message.body.map(this.decrypt);
+      this.set('members', Ember.A(message.body.map(function (nick) {
+        return that.decrypt(nick);
+      })));
       break;
     case "error":
       console.log("Error: " + message.body);
