@@ -22,6 +22,7 @@ function hmac (str) {
 
 export default Ember.Object.extend({
   id: null,
+  id_b64: null,
   salt: null,
   password: null,
   socket: null,
@@ -41,11 +42,12 @@ export default Ember.Object.extend({
   key: Ember.computed('salt', 'password', function () {
     return forge.pkcs5.pbkdf2(this.get('password'), this.get('salt'), 32, 32);
   }),
+
   key_hash: Ember.computed('key', function () {
     return hmac(this.get('key'));
   }),
 
-  create: function () {
+  start: function () {
     return Ember.$.post(httpPrefix + '/c/new', {
       id: this.id,
       salt: e64(this.salt),
@@ -85,21 +87,36 @@ export default Ember.Object.extend({
         text = byteArray[2],
         ptext = forge.aes.startDecrypting(this.get('key'), iv),
         newBuffer = forge.util.createBuffer(text);
+
     ptext.update(newBuffer);
     ptext.finish();
     return ptext.output.data;
+  },
+
+  send: function (kind, body, noEncrypt) {
+    if (body !== null && !noEncrypt) {
+      body = this.encrypt(body);
+    }
+    this.socket.send(JSON.stringify({
+      kind: kind,
+      body: body
+    }));
   },
 
   onServerMessage: function (message) {
     switch(message.kind) {
     case "salt":
       this.set('salt', d64(message.body));
+      this.send('join', this.get('key_hash'), true);
       break;
     case "join":
-      this.nick = this.decrypt(message.body);
+      this.set('nick', this.decrypt(message.body));
       break;
     case "members":
       this.members = message.body.map(this.decrypt);
+      break;
+    case "error":
+      console.log("Error: " + message.body);
       break;
     }
   },
