@@ -17,10 +17,9 @@ class Channel(object):
     id_source = 0
 
 
-    def __init__(self, salt, key_hash):
+    def __init__(self, salt):
         self.clients = set()
         self.salt = salt
-        self.key_hash = key_hash
         self.hash_ids = Hashids(salt=salt, min_length=6)
         self.created_at = datetime.now()
 
@@ -65,11 +64,11 @@ class Channels(object):
         return name in cls.CHANNELS
 
     @classmethod
-    def create(cls, name, salt, hashed_key):
+    def create(cls, name, salt):
         if cls.exists(name):
             raise ChannelAlreadyExists()
 
-        cls.CHANNELS[name] = Channel(salt, hashed_key)
+        cls.CHANNELS[name] = Channel(salt)
         return cls.CHANNELS[name]
 
     @classmethod

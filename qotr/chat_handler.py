@@ -11,6 +11,7 @@ L = logging.getLogger(__name__)
 # pylint: disable=W0223
 class ChatHandler(websocket.WebSocketHandler):
 
+    id = None
     nick = None
     channel = None
     channel_id = None
@@ -32,7 +33,7 @@ class ChatHandler(websocket.WebSocketHandler):
         try:
             self.channel = Channels.get(self.channel_id)
             self.channel.connections += 1
-            self.nick = self.channel.new_id()
+            self.id = self.channel.new_id()
 
             # Tell the user the channel's salt.
             Message(MT.salt, body=self.channel.salt).send(self)
@@ -68,19 +69,16 @@ class ChatHandler(websocket.WebSocketHandler):
 
         if self.channel.has(self):
             self.respond_with_error("Already in channel")
-        elif message.body == self.channel.key_hash:
-            self.channel.join(self)
-            Message(MT.join, self.nick).send(self)
-            self.broadcast(Message(MT.join, self.nick, sender=self))
-            self.authenticated = True
+
+        self.nick = message.body
+        self.channel.join(self)
+        Message(MT.join, self.nick).send(self)
+        self.broadcast(Message(MT.join, self.nick, sender=self))
 
     def handle_members(self, _):
         '''
         Handle a chat message.
         '''
-        if not self.authenticated:
-            self.respond_with_error("Not authenticated")
-            return
         Message(MT.members, body=self.channel.members).send(self)
 
     def handle_chat(self, message):

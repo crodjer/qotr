@@ -16,11 +16,10 @@ class TestChatHandler(BaseAsyncTest):
     port = None
     channel_id = 'test-channel'
     salt = 'common'
-    key_hash = 'test-key-hmac'
 
     def setUp(self):
         super(TestChatHandler, self).setUp()
-        Channels.create(self.channel_id, self.salt, self.key_hash)
+        Channels.create(self.channel_id, self.salt)
 
     def _mk_connection(self):
         return websocket.websocket_connect(
@@ -33,11 +32,8 @@ class TestChatHandler(BaseAsyncTest):
         # Discard the salt.
         yield c.read_message()
 
-        if nick:
-            send(c, m('nick', nick))
-
         if join:
-            send(c, m('join', self.key_hash))
+            send(c, m('join', nick))
             # Discard the join message
             yield c.read_message() # C1's join
 

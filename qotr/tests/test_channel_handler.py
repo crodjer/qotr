@@ -19,12 +19,10 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
     def test_create(self):
         salt = "common"
         channel_id = "test-channel"
-        key_hash = 'hmac-key'
 
         body = "&".join([
             "id={channel_id}",
             "salt={salt}",
-            "key_hash={key_hash}"
         ]).format(**locals())
 
         response = json.loads(self.fetch(
@@ -39,14 +37,12 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
 
         channel = Channels.get(channel_id)
         self.assertEqual(salt, channel.salt)
-        self.assertEqual(key_hash, channel.key_hash)
 
 
     def test_confict(self):
         body = "&".join([
             "id=test-channel",
             "salt=common",
-            "key_hash=hmac-key"
         ])
 
         self.fetch('/c/new', method='POST', body=body)

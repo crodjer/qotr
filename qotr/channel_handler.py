@@ -27,10 +27,9 @@ class ChannelHandler(web.RequestHandler):
     def post(self):
         channel_id = self.get_argument('id')
         salt = self.get_argument('salt')
-        key_hash = self.get_argument('key_hash')
 
         try:
-            Channels.create(channel_id, salt, key_hash)
+            Channels.create(channel_id, salt)
             self.write({
                 "id": channel_id,
                 "salt": salt
