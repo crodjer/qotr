@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import { moduleFor, test } from 'ember-qunit';
 import shortid from 'npm:shortid';
 
@@ -6,28 +7,32 @@ moduleFor('model:channel', 'Unit | Model | channel', {
   needs: []
 });
 
-var e64 = forge.util.encode64;
-
 test('it can be created', function(assert) {
   var channel = this.subject();
-  assert.ok(channel.salt);
-  assert.ok(channel.password);
-  assert.ok(channel.key);
+
+  assert.ok(channel.get('salt'));
+  assert.ok(channel.get('password'));
+  assert.ok(channel.get('key'));
+  assert.ok(channel.get('key_hash'));
   assert.equal(channel.decrypt(channel.encrypt('foo')), 'foo');
 });
 
 test('it can be loaded', function(assert) {
   var obj = {
       id: shortid.generate(),
-      salt: e64(forge.random.getBytesSync(128)),
       password: shortid.generate()
   };
-  var channel = this.subject(obj);
+  var salt = forge.random.getBytesSync(128);
 
-  assert.equal(obj.id, channel.id);
-  assert.equal(obj.salt, e64(channel.salt));
-  assert.equal(obj.password, channel.password);
-  assert.equal(channel.decrypt(channel.encrypt('foo')), 'foo');
+  var channel = this.subject(obj);
+  channel.set('salt', salt);
+
+  Ember.run.later(function () {
+    assert.equal(channel.id, obj.id);
+    assert.equal(channel.get('salt'), salt);
+    assert.equal(channel.get('password'), obj.password);
+    assert.equal(channel.decrypt(channel.encrypt('foo')), 'foo');
+  }, 100);
 });
 
 test('it ignores text which isn\'t encrypted', function(assert) {

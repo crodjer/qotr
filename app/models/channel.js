@@ -22,37 +22,53 @@ function hmac (str) {
 
 export default Ember.Object.extend({
   id: null,
+  salt: null,
+  password: null,
   socket: null,
+  messages: null,
 
   init: function () {
-    if (this.id) {
-      this.salt = d64(this.salt);
-    } else {
-      this.id = shortid.generate();
-      this.salt = forge.random.getBytesSync(128);
-      this.password = shortid.generate();
+    if (!this.id) {
+      this.set('id', shortid.generate());
+      this.set('salt', forge.random.getBytesSync(128));
+      this.set('password', shortid.generate());
     }
 
     this.id_b64 = e64(this.id);
-    this.key = forge.pkcs5.pbkdf2(this.password, this.salt, 32, 32);
-    this.key_hash = hmac(this.key);
+    this.messages = Ember.A();
   },
+
+  key: Ember.computed('salt', 'password', function () {
+    return forge.pkcs5.pbkdf2(this.get('password'), this.get('salt'), 32, 32);
+  }),
+  key_hash: Ember.computed('key', function () {
+    return hmac(this.get('key'));
+  }),
 
   create: function () {
     return Ember.$.post(httpPrefix + '/c/new', {
       id: this.id,
       salt: e64(this.salt),
-      key_hash: this.key_hash
+      key_hash: this.get('key_hash')
     });
   },
 
   connect: function () {
-    this.socket = new WebSocket(wsPrefix + '/c/' + this.id);
+    var socket = new WebSocket(wsPrefix + '/c/' + this.id),
+        _this = this;
+    this.socket = socket;
+    this.socket.onmessage = function (event) {
+        var message = JSON.parse(event.data);
+        if (message.sender === null) {
+          _this.onServerMessage(message);
+        } else {
+          _this.onFriendMessage(message);
+    }};
   },
 
   encrypt: function (str) {
     var iv = forge.random.getBytesSync(32),
-        cipher = forge.aes.startEncrypting(this.key, iv),
+        cipher = forge.aes.startEncrypting(this.get('key'), iv),
         input = forge.util.createBuffer(str);
     cipher.update(input);
     cipher.finish();
@@ -67,10 +83,27 @@ export default Ember.Object.extend({
     var byteArray = str.split(ivSeparator).map(d64),
         iv = byteArray[1],
         text = byteArray[2],
-        ptext = forge.aes.startDecrypting(this.key, iv),
+        ptext = forge.aes.startDecrypting(this.get('key'), iv),
         newBuffer = forge.util.createBuffer(text);
     ptext.update(newBuffer);
     ptext.finish();
     return ptext.output.data;
-  }
+  },
+
+  onServerMessage: function (message) {
+    switch(message.kind) {
+    case "salt":
+      this.set('salt', d64(message.body));
+      break;
+    case "join":
+      this.nick = this.decrypt(message.body);
+      break;
+    case "members":
+      this.members = message.body.map(this.decrypt);
+      break;
+    }
+  },
+
+  onFriendMessage: function (/* message */) {
+  },
 });
