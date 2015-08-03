@@ -32,14 +32,12 @@ class ChatHandler(websocket.WebSocketHandler):
         self.channel_id = channel_id
         try:
             self.channel = Channels.get(self.channel_id)
-            self.channel.connections += 1
             self.id = self.channel.new_id()
-
             # Tell the user the channel's salt.
             Message(MT.salt, body=self.channel.salt).send(self)
+            self.channel.connections += 1
         except ChannelDoesNotExist:
             self.respond_with_error("Channel does not exist")
-            self.channel.connections -= 1
             self.close()
 
     def respond_with_error(self, error="An error occured."):
