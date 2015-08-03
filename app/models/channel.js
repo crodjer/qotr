@@ -31,9 +31,9 @@ export default Ember.Object.extend({
       this.set('password', shortid.generate());
     }
 
-    this.id_b64 = e64(this.id);
-    this.members = Ember.A();
-    this.messages = Ember.A();
+    this.set('id_b64', e64(this.get('id')));
+    this.set('members', Ember.A());
+    this.set('messages', Ember.A());
 
     if (!this.get('nick')) {
       this.set('nick', shortid.generate());
@@ -91,13 +91,17 @@ export default Ember.Object.extend({
   },
 
   send: function (kind, body) {
-    if (body !== null) {
-      body = this.encrypt(body);
-    }
-    this.socket.send(JSON.stringify({
+    var message = {
       kind: kind,
       body: body
-    }));
+    };
+    if (kind === 'chat') {
+      this.messages.pushObject({ out: message });
+    }
+    if (body !== null) {
+      message.body = this.encrypt(message.body);
+    }
+    this.socket.send(JSON.stringify(message));
   },
 
   onServerMessage: function (message) {
@@ -107,9 +111,9 @@ export default Ember.Object.extend({
     case "salt":
       this.set('salt', d64(message.body));
       this.send('join', this.get('nick'));
-      Ember.run.later(function () {
-        that.send('members');
-      });
+      break;
+    case "join":
+      that.send('members');
       break;
     case "members":
       this.set('members', Ember.A(message.body.map(function (nick) {
@@ -122,6 +126,25 @@ export default Ember.Object.extend({
     }
   },
 
-  onFriendMessage: function (/* message */) {
+  onFriendMessage: function (message) {
+    message.body = this.decrypt(message.body);
+    message.sender = this.decrypt(message.sender);
+
+    switch(message.kind) {
+    case "join":
+      // Push the message to the history
+      this.messages.pushObject({ in: message });
+      break;
+    case "chat":
+      // Push the message to the history
+      this.messages.pushObject(message);
+      break;
+    case "nick":
+      this.send('members');
+      break;
+    case "error":
+      console.log("Error: " + message.body);
+      break;
+    }
   },
 });
