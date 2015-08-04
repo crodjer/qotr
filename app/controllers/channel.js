@@ -44,6 +44,8 @@ export default Ember.Controller.extend({
     // Possibly better kept at the corresponding view.
     var html = Ember.$('html');
 
-    html.scrollTop(html[0].scrollHeight);
+    Ember.run.later(function () {
+      html.scrollTop(html[0].scrollHeight);
+    }, 10);
   })
 });
