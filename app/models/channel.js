@@ -117,7 +117,12 @@ export default Ember.Object.extend({
       break;
     case "members":
       this.set('members', Ember.A(message.body.map(function (nick) {
-        return that.decrypt(nick);
+        nick = that.decrypt(nick);
+
+        return {
+          type: nick === that.nick ? "self":"friend",
+          nick: nick
+        };
       })));
       break;
     case "error":
@@ -132,11 +137,12 @@ export default Ember.Object.extend({
 
     switch(message.kind) {
     case "join":
-      // Push the message to the history
+      this.messages.pushObject({ in: message });
+      break;
+    case "part":
       this.messages.pushObject({ in: message });
       break;
     case "chat":
-      // Push the message to the history
       this.messages.pushObject(message);
       break;
     case "nick":
