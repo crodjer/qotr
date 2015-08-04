@@ -1,34 +1,25 @@
-<!-- Navigation -->
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <!-- Brand and toggle get grouped for better mobile display -->
-  <div class="navbar-header">
-    <a class="navbar-brand" href="/">QOTR</a>
-  </div>
-</nav>
+{{ partial "edit-nick" }}
+{{ partial "navigation" }}
+{{ partial "channel-members" }}
 
-<!-- Sidebar -->
-<div id="sidebar-wrapper">
-  {{#each model.members as |member|}}
-  <div class="chat-member chat-member-{{ member.type }}">
-    {{ member.nick }}
-  </div>
-  {{/each}}
-</div>
-<!-- /#sidebar-wrapper -->
-
-<!-- Page Content -->
 <div id="page-content-wrapper">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-12">
+      <div id="chat-logs">
+        {{#each model.messages as |message| }}
+        <div class="message message-kind-{{ message.kind }}
+          message-direction-{{ message.direction }}">
+          {{# if message.isChat }}
+            {{ partial "chat-message" }}
+            {{/if }}
+        </div>
+        {{/each }}
       </div>
     </div>
     <div class="row">
       <div id="chat-input">
-        {{ input }}
+        {{ input autofocus=true enter="sendChat" value=chatMessage }}
       </div>
     </div>
   </div>
 </div>
-<!-- /#page-content-wrapper -->
-{{outlet}}

@@ -20,6 +20,9 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('bower_components/bootstrap/dist/css/bootstrap.css');
+  app.import('bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff', {
+    destDir: 'fonts'
+  });
   app.import('vendor/forge.min.js');
 
   return app.toTree();

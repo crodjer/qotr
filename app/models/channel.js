@@ -2,7 +2,9 @@ import Ember from 'ember';
 import shortid from 'npm:shortid';
 import config from '../config/environment';
 
-var ivSeparator = '|';
+var ivSeparator = '|',
+    OUT = { direction: "out" },
+    IN = { direction: "in" };
 
 var host = window.location.hostname,
     protocolSuffix = window.location.protocol.replace(/^http/, '') + '//',
@@ -13,6 +15,269 @@ var host = window.location.hostname,
 
 var e64 = forge.util.encode64,
     d64 = forge.util.decode64;
+
+function mkMessage() {
+  var message = Ember.Object.create.apply(Ember.Object, arguments);
+  message['is' + Ember.String.capitalize(message.kind)] = true;
+
+  return message;
+}
+
+var fixtures = [
+  {
+    "kind": "chat",
+    "body": "Test",
+    "sender": "Me",
+    "direction": "out",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Test",
+    "sender": "Me",
+    "direction": "out",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Test",
+    "sender": "Me",
+    "direction": "out",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Test",
+    "sender": "Me",
+    "direction": "out",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Yo",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Nice",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "nice nice",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "nice ",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "This is so awesome.",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Test",
+    "sender": "Me",
+    "direction": "out",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Yo",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Nice",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "nice nice",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "nice ",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "This is so awesome.",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Test",
+    "sender": "Me",
+    "direction": "out",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Yo",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "This is so awesome.",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Test",
+    "sender": "Me",
+    "direction": "out",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Yo",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "Nice",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "nice nice",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "nice ",
+    "sender": "test",
+    "direction": "in",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "This is so awesome.",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "No?",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  },
+  {
+    "kind": "chat",
+    "body": "I mean c'mon",
+    "direction": "out",
+    "sender": "Me",
+    "isChat": true
+  }
+];
+
 
 export default Ember.Object.extend({
   id: null,
@@ -34,6 +299,7 @@ export default Ember.Object.extend({
     this.set('id_b64', e64(this.get('id')));
     this.set('members', Ember.A());
     this.set('messages', Ember.A());
+    this.get('messages').pushObjects(fixtures);
 
     if (!this.get('nick')) {
       this.set('nick', shortid.generate());
@@ -96,7 +362,7 @@ export default Ember.Object.extend({
       body: body
     };
     if (kind === 'chat') {
-      this.messages.pushObject({ out: message });
+      this.messages.pushObject(mkMessage(message, OUT, { sender: "Me" }));
     }
     if (body !== null) {
       message.body = this.encrypt(message.body);
@@ -132,18 +398,23 @@ export default Ember.Object.extend({
   },
 
   onFriendMessage: function (message) {
-    message.body = this.decrypt(message.body);
+    if (message.body) {
+      message.body = this.decrypt(message.body);
+    }
+
     message.sender = this.decrypt(message.sender);
 
     switch(message.kind) {
     case "join":
-      this.messages.pushObject({ in: message });
+      this.send('members');
+      this.messages.pushObject(Ember.Object.create(message, IN));
       break;
     case "part":
-      this.messages.pushObject({ in: message });
+      this.messages.pushObject(Ember.Object.create(message, IN));
+      this.send('members');
       break;
     case "chat":
-      this.messages.pushObject(message);
+      this.messages.pushObject(mkMessage(message, IN));
       break;
     case "nick":
       this.send('members');
@@ -152,5 +423,5 @@ export default Ember.Object.extend({
       console.log("Error: " + message.body);
       break;
     }
-  },
+  }
 });

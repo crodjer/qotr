@@ -1,0 +1,14 @@
+<div id="sidebar-wrapper">
+  {{#each model.members as |member|}}
+  <div class="chat-member chat-member-{{ member.type }}">
+    <a class="pull-right cursor glyphicon glyphicon-edit"
+      {{action "editNick" }}>
+    </a>
+    <div >
+    </div>
+    <div>
+      {{ member.nick }}
+    </div>
+  </div>
+  {{/each}}
+</div>
