@@ -63,15 +63,20 @@ export default Ember.Object.extend({
 
   connect: function () {
     var socket = new WebSocket(wsPrefix + '/channels/' + this.id),
-        _this = this;
+        that = this;
     this.socket = socket;
     this.socket.onmessage = function (event) {
         var message = JSON.parse(event.data);
         if (message.sender === null) {
-          _this.onServerMessage(message);
+          that.onServerMessage(message);
         } else {
-          _this.onFriendMessage(message);
-    }};
+          that.onFriendMessage(message);
+        }
+    };
+
+    setInterval(function () {
+      that.send('ping');
+    }, 30000);
   },
 
   encrypt: function (str) {
@@ -134,6 +139,9 @@ export default Ember.Object.extend({
         };
       })));
       break;
+    case "pong":
+      console.log("Pong form the server");
+      break;
     case "error":
       console.log("Error: " + message.body);
       break;
@@ -150,17 +158,18 @@ export default Ember.Object.extend({
     switch(message.kind) {
     case "join":
       this.send('members');
-      this.messages.pushObject(Ember.Object.create(message, IN));
+      this.messages.pushObject(mkMessage(message, IN));
       break;
     case "part":
-      this.messages.pushObject(Ember.Object.create(message, IN));
       this.send('members');
+      this.messages.pushObject(mkMessage(message, IN));
       break;
     case "chat":
       this.messages.pushObject(mkMessage(message, IN));
       break;
     case "nick":
       this.send('members');
+      this.messages.pushObject(mkMessage(message, IN));
       break;
     case "error":
       console.log("Error: " + message.body);

@@ -9,9 +9,18 @@
         {{#each model.messages as |message| }}
         <div class="message message-kind-{{ message.kind }}
           message-direction-{{ message.direction }}">
-          {{# if message.isChat }}
+          {{#if message.isChat }}
             {{ partial "chat-message" }}
-            {{/if }}
+          {{/if }}
+          {{#if message.isJoin }}
+            {{ partial "join-message" }}
+          {{/if }}
+          {{#if message.isPart }}
+            {{ partial "part-message" }}
+          {{/if }}
+          {{#if message.isNick }}
+            {{ partial "nick-message" }}
+          {{/if }}
         </div>
         {{/each }}
       </div>
