@@ -18,9 +18,11 @@ test('it ignores text which isn\'t encrypted', function(assert) {
 });
 
 test('it creates an actual channel on server', function(assert) {
-  var channel = this.factory().create();
+  var channel = this.factory().create(),
+      done = assert.async();
   channel.start().then(function(resp) {
     assert.equal(channel.id, resp.id);
+    done();
   });
 });
 
