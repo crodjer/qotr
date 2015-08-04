@@ -85,6 +85,12 @@ class ChatHandler(websocket.WebSocketHandler):
         '''
         self.broadcast(message)
 
+    def handle_ping(self, _):
+        '''
+        Re-broadcast any chat messages that come in.
+        '''
+        Message(MT.pong).send(self)
+
     def on_message(self, message):
         try:
             message = Message.from_json(message)

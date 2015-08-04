@@ -3,6 +3,8 @@ from enum import Enum
 
 MessageTypes = Enum('MessageTypes', [
     'join',
+    'ping',
+    'pong',
     'nick',
     'salt',
     'chat',

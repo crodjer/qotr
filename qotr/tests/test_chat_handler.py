@@ -60,6 +60,21 @@ class TestChatHandler(BaseAsyncTest):
         self.assertEqual(2, len(channel.clients))
 
     @testing.gen_test
+    def test_ping(self):
+        channel = Channels.get(self.channel_id)
+        self.assertEqual(0, len(channel.clients))
+
+        c = yield self._mk_client('foo')
+        send(c, m('ping'))
+        response = yield c.read_message()
+
+        self.assertEqual({
+            "kind": "pong",
+            "body": None,
+            "sender": None
+        }, json.loads(response))
+
+    @testing.gen_test
     def test_nick(self):
         channel = Channels.get(self.channel_id)
         nick_1 = 'foo'
