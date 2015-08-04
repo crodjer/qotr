@@ -56,9 +56,9 @@ class ChatHandler(websocket.WebSocketHandler):
         Handle a nick change for the client.
         '''
 
-        self.nick = message.body
         if self.channel.has(self):
             self.broadcast(message)
+        self.nick = message.body
 
     def handle_join(self, message):
         '''

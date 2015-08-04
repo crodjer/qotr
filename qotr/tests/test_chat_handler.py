@@ -87,6 +87,23 @@ class TestChatHandler(BaseAsyncTest):
         self.assertEqual({nick_1, nick_2}, set(channel.members))
 
     @testing.gen_test
+    def test_nick_change(self):
+        channel = Channels.get(self.channel_id)
+        self.assertEqual(0, len(channel.clients))
+
+        c1 = yield self._mk_client('foo')
+        c2 = yield self._mk_client('bar')
+
+        send(c1, m('nick', 'foo-new'))
+        response = yield c2.read_message()
+
+        self.assertEqual({
+            "kind": "nick",
+            "body": "foo-new",
+            "sender": "foo"
+        }, json.loads(response))
+
+    @testing.gen_test
     def test_chat(self):
         channel = Channels.get(self.channel_id)
         self.assertEqual(0, len(channel.clients))
