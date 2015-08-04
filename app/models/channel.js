@@ -311,7 +311,7 @@ export default Ember.Object.extend({
   }),
 
   start: function () {
-    return Ember.$.post(httpPrefix + '/c/new', {
+    return Ember.$.post(httpPrefix + '/channels/new', {
       id: this.id,
       salt: e64(this.salt),
       key_hash: this.get('key_hash')
@@ -319,7 +319,7 @@ export default Ember.Object.extend({
   },
 
   connect: function () {
-    var socket = new WebSocket(wsPrefix + '/c/' + this.id),
+    var socket = new WebSocket(wsPrefix + '/channels/' + this.id),
         _this = this;
     this.socket = socket;
     this.socket.onmessage = function (event) {

@@ -26,7 +26,7 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
         ]).format(**locals())
 
         response = json.loads(self.fetch(
-            '/c/new', method='POST',
+            '/channels/new', method='POST',
             body=body
         ).body.decode('utf8'))
 
@@ -45,9 +45,9 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
             "salt=common",
         ])
 
-        self.fetch('/c/new', method='POST', body=body)
+        self.fetch('/channels/new', method='POST', body=body)
         response = json.loads(self.fetch(
-            '/c/new', method='POST',
+            '/channels/new', method='POST',
             body=body
         ).body.decode('utf8'))
 

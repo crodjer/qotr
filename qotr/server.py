@@ -20,9 +20,9 @@ def make_application():
 
     return web.Application([
         (r"/()", IndexHandler),
-        (r"/channels/([^/]+)", IndexHandler),
-        (r"/c/new", ChannelHandler),
-        (r"/c/([^/]+)", ChatHandler),
+        (r"/c/([^/]+)", IndexHandler),
+        (r"/channels/new", ChannelHandler),
+        (r"/channels/([^/]+)", ChatHandler),
         (r"/(.*)", web.StaticFileHandler, {'path': 'dist/'})
 
     ], debug=config.debug)

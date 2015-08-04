@@ -23,7 +23,7 @@ class TestChatHandler(BaseAsyncTest):
 
     def _mk_connection(self):
         return websocket.websocket_connect(
-            'ws://localhost:{}/c/{}'.format(self.port, self.channel_id)
+            'ws://localhost:{}/channels/{}'.format(self.port, self.channel_id)
         )
 
     @gen.coroutine
