@@ -1,8 +1,8 @@
-{{# if editingNick }}
-{{ partial "edit-nick" }}
-{{/if }}
 {{ partial "navigation" }}
-{{ partial "channel-members" }}
+{{# if editingNick }}
+{{ partial "channels/edit-nick" }}
+{{/if }}
+{{ partial "channels/channel-members" }}
 
 <div id="page-content-wrapper">
   <div class="container-fluid">
@@ -12,16 +12,16 @@
         <div class="message message-kind-{{ message.kind }}
           message-direction-{{ message.direction }}">
           {{#if message.isChat }}
-            {{ partial "chat-message" }}
+            {{ partial "channels/chat-message" }}
           {{/if }}
           {{#if message.isJoin }}
-            {{ partial "join-message" }}
+            {{ partial "channels/join-message" }}
           {{/if }}
           {{#if message.isPart }}
-            {{ partial "part-message" }}
+            {{ partial "channels/part-message" }}
           {{/if }}
           {{#if message.isNick }}
-            {{ partial "nick-message" }}
+            {{ partial "channels/nick-message" }}
           {{/if }}
         </div>
         {{/each }}
