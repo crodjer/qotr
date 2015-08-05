@@ -2,7 +2,7 @@ import logging
 
 from .channels import Channels
 from .exceptions import ChannelAlreadyExists
-from .config import config, Production
+from .config import config
 
 from tornado import web
 
@@ -23,6 +23,13 @@ class ChannelHandler(web.RequestHandler):
             self.set_header("Access-Control-Allow-Headers", "Content-Type")
 
         self.set_header('Content-Type', 'application/json')
+
+    def get(self):
+
+        self.write({
+            "connections": Channels.connections(),
+            "channels": Channels.count()
+        })
 
     def post(self):
         channel_id = self.get_argument('id')

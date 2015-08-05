@@ -36,6 +36,14 @@ class TestChannels(unittest.TestCase):
         with self.assertRaises(ChannelDoesNotExist):
             Channels.get(self.channel_id)
 
+    def test_remove(self):
+        Channels.create(self.channel_id, self.salt)
+        self.assertEqual(1, Channels.count())
+        Channels.remove(self.channel_id)
+        self.assertEqual(0, Channels.count())
+        Channels.remove(self.channel_id)
+        self.assertEqual(0, Channels.count())
+
     def test_join_part(self):
         channel = Channels.create(self.channel_id, self.salt)
         channel.join(self.member)

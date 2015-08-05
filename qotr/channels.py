@@ -79,6 +79,14 @@ class Channels(object):
             pass
 
     @classmethod
+    def connections(cls):
+        return sum(c.connections for c in cls.CHANNELS.values())
+
+    @classmethod
+    def count(cls):
+        return len(cls.CHANNELS)
+
+    @classmethod
     def reset(cls):
         cls.CHANNELS = {}
 

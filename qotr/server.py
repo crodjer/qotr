@@ -21,7 +21,9 @@ def make_application():
     return web.Application([
         (r"/()", IndexHandler),
         (r"/c/([^/]+)", IndexHandler),
+        (r"/channels/", ChannelHandler),
         (r"/channels/new", ChannelHandler),
+        (r"/channels/stats", ChannelHandler),
         (r"/channels/([^/]+)", ChatHandler),
         (r"/(.*)", web.StaticFileHandler, {'path': 'dist/'})
 

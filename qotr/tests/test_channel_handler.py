@@ -38,6 +38,26 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
         channel = Channels.get(channel_id)
         self.assertEqual(salt, channel.salt)
 
+    def test_stats(self):
+        channel = Channels.create("test-channel", "common")
+        response = json.loads(self.fetch(
+            '/channels/'
+        ).body.decode('utf8'))
+
+        self.assertEqual({
+            "connections": 0,
+            "channels": 1
+        }, response)
+
+        channel.connections += 1
+        response = json.loads(self.fetch(
+            '/channels/'
+        ).body.decode('utf8'))
+
+        self.assertEqual({
+            "connections": 1,
+            "channels": 1
+        }, response)
 
     def test_confict(self):
         body = "&".join([
