@@ -50,7 +50,7 @@ server for a endpoint.
 Installation
 ````````````
 
-QOTR server requires a ``Python 3`` based ``virtualenv`` present, which can
+QOTR server requires a ``Python 3`` based ``virtualenv`` present.
 
 Running/Development
 ```````````````````
