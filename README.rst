@@ -89,7 +89,7 @@ You will need the following things properly installed on your computer:
 Installation
 ````````````
 
-. code ::
+.. code ::
 
     $ npm install
     $ bower install
@@ -97,7 +97,7 @@ Installation
 Running / Development
 `````````````````````
 
-. code ::
+.. code ::
 
     $ ember server
 
@@ -125,7 +125,7 @@ Execute the tests:
 Building
 ````````
 
-. code ::
+.. code ::
 
     $ ember build # development build
     $ ember build --environment production # production build
