@@ -11,7 +11,13 @@ export default Ember.Controller.extend({
     },
     nickSave: function () {
       var that = this,
-          nick = this.get('editingNickText');
+          nick = this.get('editingNickText').trim(),
+          oldNick = this.get('model.nick').trim();
+
+      if (!nick || nick === oldNick) {
+        that.set('editingNick', false);
+        return;
+      }
 
       if (this.get('makeDefaultNick')) {
         localStorage['qotr-nick'] = nick;
