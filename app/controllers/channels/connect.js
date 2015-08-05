@@ -44,7 +44,7 @@ export default Ember.Controller.extend({
     },
 
     disconnect: function () {
-      this.model.socket.close();
+      this.model.disconnect();
     }
   },
 

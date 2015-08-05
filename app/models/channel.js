@@ -85,6 +85,11 @@ export default Ember.Object.extend({
     }, 30000);
   },
 
+  disconnect: function () {
+    this.socket.close();
+    delete this.socket;
+  },
+
   encrypt: function (str) {
     var iv = forge.random.getBytesSync(32),
         cipher = forge.aes.startEncrypting(this.get('key'), iv),

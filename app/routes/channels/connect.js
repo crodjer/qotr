@@ -2,6 +2,12 @@ import Ember from 'ember';
 import Channel from '../../models/channel';
 
 export default Ember.Route.extend({
+  actions: {
+    willTransition: function() {
+      this.currentModel.disconnect();
+    }
+  },
+
   model: function (params) {
     var channel = Channel.create({
       id: params.id,
