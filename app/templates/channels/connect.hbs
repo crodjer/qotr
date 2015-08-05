@@ -8,26 +8,28 @@
   <div class="container-fluid">
     <div class="row">
       <div id="chat-logs">
-        {{#each model.messages as |message| }}
-        <div class="message message-kind-{{ message.kind }}
-          message-direction-{{ message.direction }}">
-          {{#if message.isChat }}
-            {{ partial "channels/chat-message" }}
-          {{/if }}
-          {{#if message.isJoin }}
-            {{ partial "channels/join-message" }}
-          {{/if }}
-          {{#if message.isPart }}
-            {{ partial "channels/part-message" }}
-          {{/if }}
-          {{#if message.isNick }}
-            {{ partial "channels/nick-message" }}
-          {{/if }}
-          {{#if message.isError }}
-            {{ partial "channels/error-message" }}
-          {{/if }}
-        </div>
-        {{/each }}
+        {{#scroll-to-bottom items=model.messages }}
+          {{#each model.messages as |message| }}
+          <div class="message message-kind-{{ message.kind }}
+            message-direction-{{ message.direction }}">
+            {{#if message.isChat }}
+              {{ partial "channels/chat-message" }}
+            {{/if }}
+            {{#if message.isJoin }}
+              {{ partial "channels/join-message" }}
+            {{/if }}
+            {{#if message.isPart }}
+              {{ partial "channels/part-message" }}
+            {{/if }}
+            {{#if message.isNick }}
+              {{ partial "channels/nick-message" }}
+            {{/if }}
+            {{#if message.isError }}
+              {{ partial "channels/error-message" }}
+            {{/if }}
+          </div>
+          {{/each }}
+        {{/scroll-to-bottom }}
       </div>
     </div>
     <div class="row">

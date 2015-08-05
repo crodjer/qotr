@@ -56,16 +56,4 @@ export default Ember.Controller.extend({
   disabled: Ember.computed('model.connected', function () {
     return !this.get('model.connected');
   }),
-
-  scrollToBottom: Ember.observer('model.messages.@each', function () {
-    // A bad hack which scrolls the page to bottom on message push.
-    // Possibly better kept at the corresponding view.
-    var html = Ember.$('html'),
-        body = Ember.$('body');
-
-    Ember.run.later(function () {
-      html.scrollTop(html[0].scrollHeight); // Firefox
-      body.scrollTop(body[0].scrollHeight); // Chrome
-    }, 10);
-  })
 });
