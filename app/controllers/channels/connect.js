@@ -52,8 +52,35 @@ export default Ember.Controller.extend({
   makeDefaultNick: false,
   editingNickText: null,
   editingNick: false,
+  focused: true,
+  pending: 0,
 
   disabled: Ember.computed('model.connected', function () {
     return !this.get('model.connected');
   }),
+
+  onMessage: Ember.observer('model.messages.@each', function () {
+    var messages = this.get('model.messages'),
+        lastMessage = messages[messages.length - 1];
+
+    if (!this.get('focused') && lastMessage) {
+      this.set('pending', this.get('pending') + 1);
+    }
+  }),
+
+  onPendingChange: Ember.observer('pending', function () {
+    var pending = this.get('pending'),
+        title = document.title.replace(/^\(\d+\)/, '');
+    if (pending > 0) {
+      title = `(${pending}) ` + title;
+    }
+
+    document.title = title;
+  }),
+
+  onFocusChange: Ember.observer('focused', function () {
+    if (this.get('focused')) {
+      this.set('pending', 0);
+    }
+  })
 });

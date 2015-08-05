@@ -1,42 +1,44 @@
 {{ partial "navigation" }}
 {{# if editingNick }}
-{{ partial "channels/edit-nick" }}
-{{/if }}
-{{ partial "channels/channel-members" }}
+  {{ partial "channels/edit-nick" }}
+  {{/if }}
+  {{ partial "channels/channel-members" }}
 
-<div id="page-content-wrapper">
-  <div class="container-fluid">
-    <div class="row">
-      <div id="chat-logs">
-        {{#scroll-to-bottom items=model.messages }}
-          {{#each model.messages as |message| }}
-          <div class="message message-kind-{{ message.kind }}
-            message-direction-{{ message.direction }}">
-            {{#if message.isChat }}
-              {{ partial "channels/chat-message" }}
-            {{/if }}
-            {{#if message.isJoin }}
-              {{ partial "channels/join-message" }}
-            {{/if }}
-            {{#if message.isPart }}
-              {{ partial "channels/part-message" }}
-            {{/if }}
-            {{#if message.isNick }}
-              {{ partial "channels/nick-message" }}
-            {{/if }}
-            {{#if message.isError }}
-              {{ partial "channels/error-message" }}
-            {{/if }}
+  <div id="page-content-wrapper">
+    {{#track-focus focused=focused }}
+      <div class="container-fluid">
+        <div class="row">
+          <div id="chat-logs">
+            {{#scroll-to-bottom items=model.messages }}
+              {{#each model.messages as |message| }}
+              <div class="message message-kind-{{ message.kind }}
+                message-direction-{{ message.direction }}">
+                {{#if message.isChat }}
+                  {{ partial "channels/chat-message" }}
+                {{/if }}
+                {{#if message.isJoin }}
+                  {{ partial "channels/join-message" }}
+                {{/if }}
+                {{#if message.isPart }}
+                  {{ partial "channels/part-message" }}
+                {{/if }}
+                {{#if message.isNick }}
+                  {{ partial "channels/nick-message" }}
+                {{/if }}
+                {{#if message.isError }}
+                  {{ partial "channels/error-message" }}
+                {{/if }}
+              </div>
+              {{/each }}
+            {{/scroll-to-bottom }}
           </div>
-          {{/each }}
-        {{/scroll-to-bottom }}
+        </div>
+        <div class="row">
+          <div id="chat-input">
+            {{ input autofocus=true enter="sendChat"
+            disabled=disabled value=chatMessage }}
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div id="chat-input">
-        {{ input autofocus=true enter="sendChat"
-           disabled=disabled value=chatMessage }}
-      </div>
-    </div>
+    {{/track-focus }}
   </div>
-</div>
