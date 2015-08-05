@@ -13,7 +13,8 @@
     width: 0;
     height: 100%;
     margin-left: -200px;
-    padding-top: 60px;
+    margin-top: 50px;
+    padding-top: 20px;
     overflow-y: auto;
     background-color: #F8F8F8;
     border-width: 0 1px 0 0;
@@ -30,9 +31,12 @@
     position: absolute;
 }
 
-.navbar {
-    position: fixed;
-    display: block;
+#page-content-wrapper .container-fluid {
+    margin-left: 0px;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
 }
 
 .modal {
@@ -62,21 +66,12 @@
     color: #CFB63B;
 }
 
-.chat-member-friend .glyphicon {
-    display: none;
-}
-
-.chat-member-self .glyphicon {
-    color: #000;
-    text-decoration: none;
+.cursor {
     cursor: pointer;
 }
 
-.container-fluid {
-}
-
 #chat-logs {
-    padding-top: 50px;
+    margin-top: 60px;
     margin-bottom: 30px;
 }
 
@@ -85,10 +80,6 @@
 }
 
 @media(min-width: 500px) {
-    #wrapper {
-        padding-left: 200px;
-    }
-
     #sidebar-wrapper {
         width: 200px;
     }
@@ -96,6 +87,11 @@
     #page-content-wrapper {
         position: relative;
     }
+
+    #page-content-wrapper .container-fluid {
+        margin-left: 200px;
+    }
+
     #chat-input input {
         width: calc(100% - 200px);
     }

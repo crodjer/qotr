@@ -32,6 +32,7 @@ export default Ember.Object.extend({
   socket: null,
   members: null,
   messages: null,
+  connected: false,
 
   init: function () {
     if (!this.id) {
@@ -65,6 +66,11 @@ export default Ember.Object.extend({
     var socket = new WebSocket(wsPrefix + '/channels/' + this.id),
         that = this;
     this.socket = socket;
+    function setConnected () {
+      that.set('connected', that.socket.readyState === 1);
+    }
+    this.socket.onopen = setConnected;
+    this.socket.onclose = setConnected;
     this.socket.onmessage = function (event) {
         var message = JSON.parse(event.data);
         if (message.sender === null) {

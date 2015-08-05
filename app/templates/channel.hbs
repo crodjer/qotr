@@ -1,4 +1,6 @@
+{{# if editingNick }}
 {{ partial "edit-nick" }}
+{{/if }}
 {{ partial "navigation" }}
 {{ partial "channel-members" }}
 
@@ -27,7 +29,8 @@
     </div>
     <div class="row">
       <div id="chat-input">
-        {{ input autofocus=true enter="sendChat" value=chatMessage }}
+        {{ input autofocus=true enter="sendChat"
+           disabled=disabled value=chatMessage }}
       </div>
     </div>
   </div>
