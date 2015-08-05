@@ -2,7 +2,7 @@
 QOTR
 ====
 
-Go off-the record, quickly --qotr
+  Go off-the record, quickly.
 
 .. image:: https://api.travis-ci.org/crodjer/qotr.svg
    :target: https://travis-ci.org/crodjer/qotr
