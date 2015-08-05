@@ -37,7 +37,7 @@ class ChatHandler(websocket.WebSocketHandler):
             Message(MT.salt, body=self.channel.salt).send(self)
             self.channel.connections += 1
         except ChannelDoesNotExist:
-            self.respond_with_error("Channel does not exist")
+            self.respond_with_error("Channel does not exist.")
             self.close()
 
     def respond_with_error(self, error="An error occured."):
@@ -66,7 +66,7 @@ class ChatHandler(websocket.WebSocketHandler):
         '''
 
         if self.channel.has(self):
-            self.respond_with_error("Already in channel")
+            self.respond_with_error("Already in the channel.")
 
         self.nick = message.body
         self.channel.join(self)
@@ -97,9 +97,9 @@ class ChatHandler(websocket.WebSocketHandler):
             message.sender = self
             getattr(self, 'handle_' + message.kind.name)(message)
         except ValueError:
-            self.respond_with_error("Invalid message format")
+            self.respond_with_error("Invalid message format.")
         except KeyError:
-            self.respond_with_error("Invalid message kind")
+            self.respond_with_error("Invalid message kind.")
 
     @gen.coroutine
     def on_close(self):

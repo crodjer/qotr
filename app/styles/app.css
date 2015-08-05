@@ -80,10 +80,26 @@ footer {
 #chat-logs {
     margin-top: 60px;
     margin-bottom: 30px;
+    font-size: 12px;
+    color: #CFB63B;
 }
 
 #chat-logs .message {
     padding: 3px;
+}
+
+.message-kind-error {
+    font-size: 14px;
+    color: #d9534f;
+}
+
+.message-kind-chat {
+    font-size: 14px;
+    color: #000;
+}
+
+.message-direction-out {
+    color: #777;
 }
 
 @media(min-width: 500px) {

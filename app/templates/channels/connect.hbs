@@ -23,6 +23,9 @@
           {{#if message.isNick }}
             {{ partial "channels/nick-message" }}
           {{/if }}
+          {{#if message.isError }}
+            {{ partial "channels/error-message" }}
+          {{/if }}
         </div>
         {{/each }}
       </div>

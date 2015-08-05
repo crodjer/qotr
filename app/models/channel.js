@@ -149,7 +149,7 @@ export default Ember.Object.extend({
       console.log("Pong form the server");
       break;
     case "error":
-      console.log("Error: " + message.body);
+      this.messages.pushObject(mkMessage(message, IN));
       break;
     }
   },
@@ -178,7 +178,7 @@ export default Ember.Object.extend({
       this.messages.pushObject(mkMessage(message, IN));
       break;
     case "error":
-      console.log("Error: " + message.body);
+      this.messages.pushObject(mkMessage(message, IN));
       break;
     }
   }
