@@ -19,7 +19,7 @@ QOTR servers cannot understand what is being said.
 For chats 256 bit AES-CES encryption is used. The key generation happens in the
 browser. To keep it easy to share a chat room, the password is provided as a location hash. Browsers do not send a location hash to the server.
 
-Try it out at my `demo server  <https://qotr.herokuapp.com/>`_.
+Try it out at the `demo server  <https://qotr.herokuapp.com/>`_.
 
 *QOTR is a alpha quality software, not vetted by cryptography experts. Please use it carefully. Avoid sending sensitive data over this.*
 
