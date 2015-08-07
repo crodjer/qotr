@@ -41,6 +41,7 @@ class ChatHandler(websocket.WebSocketHandler):
             self.close()
 
     def respond_with_error(self, error="An error occured."):
+        L.warn("Error response @%s: %s", self.channel_id, error)
         Message(MT.error, body=error).send(self)
 
     def broadcast(self, message):
