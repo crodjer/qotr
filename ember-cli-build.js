@@ -28,5 +28,6 @@ module.exports = function(defaults) {
     destDir: 'fonts'
   });
   app.import('vendor/forge.min.js');
+  app.import('vendor/regex-weburl.js');
   return app.toTree();
 };

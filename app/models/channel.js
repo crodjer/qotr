@@ -182,7 +182,6 @@ export default Ember.Object.extend({
       break;
     case "nick":
       this.send('members');
-      this.messages.pushObject(mkMessage(message, IN));
       break;
     case "error":
       this.messages.pushObject(mkMessage(message, IN));
