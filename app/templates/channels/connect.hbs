@@ -2,7 +2,10 @@
 {{# if editingNick }}
   {{ partial "channels/edit-nick" }}
   {{/if }}
-  {{ partial "channels/channel-members" }}
+  <div id="sidebar-wrapper">
+    {{ partial "channels/channel-members" }}
+    {{ partial "footer" }}
+  </div>
 
   <div id="page-content-wrapper">
     {{#track-focus focused=focused }}
