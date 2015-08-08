@@ -67,7 +67,7 @@ export default Ember.Object.extend({
         that = this;
     this.socket = socket;
     function setConnected () {
-      that.set('connected', that.socket.readyState === 1);
+      that.set('connected', socket.readyState === 1);
     }
     this.socket.onopen = setConnected;
     this.socket.onclose = setConnected;
@@ -80,12 +80,14 @@ export default Ember.Object.extend({
         }
     };
 
-    setInterval(function () {
+    this.pingInterval = setInterval(function () {
       that.send('ping');
     }, 30000);
   },
 
   disconnect: function () {
+    clearInterval(this.pingInterval);
+
     this.socket.close();
     delete this.socket;
   },

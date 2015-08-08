@@ -9,7 +9,6 @@ export default Ember.Route.extend({
 
     return channel.start().then(function () {
       channel.connect();
-
       return channel;
     });
   },
