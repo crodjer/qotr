@@ -153,7 +153,6 @@ export default Ember.Object.extend({
       })));
       break;
     case "pong":
-      console.log("Pong form the server");
       break;
     case "error":
       this.messages.pushObject(mkMessage(message, IN));
