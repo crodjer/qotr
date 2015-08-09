@@ -37,7 +37,7 @@ class TestChatHandler(BaseAsyncTest):
             # Discard the join message
             yield c.read_message() # C1's join
 
-        return c
+        raise gen.Return(c)
 
     @testing.gen_test
     def test_connect(self):
@@ -143,6 +143,7 @@ class TestChatHandler(BaseAsyncTest):
 
         # Wait for the channel to be removed.
         yield gen.sleep(0.001)
+
         with self.assertRaises(ChannelDoesNotExist):
             Channels.get(self.channel_id)
 

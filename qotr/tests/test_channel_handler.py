@@ -1,5 +1,5 @@
 import json
-from tornado import testing
+from tornado import testing, gen
 
 from qotr.server import make_application
 from qotr.channels import Channels
@@ -66,6 +66,7 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
         ])
 
         self.fetch('/channels/new', method='POST', body=body)
+        gen.sleep(0.001) # Wait for the fetch
         response = json.loads(self.fetch(
             '/channels/new', method='POST',
             body=body

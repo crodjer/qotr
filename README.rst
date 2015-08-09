@@ -45,11 +45,6 @@ The server is based on `tornado <http://tornadoweb.org/>`_ web framework. As of
 now, the channels are stored in memory, hence QOTR can only have a single
 server for a endpoint.
 
-Installation
-````````````
-
-QOTR server requires a ``Python 3`` based ``virtualenv`` present.
-
 Running/Development
 ```````````````````
 
