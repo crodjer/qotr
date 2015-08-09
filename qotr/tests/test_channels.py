@@ -5,7 +5,7 @@ from qotr.config import config
 from qotr.exceptions import ChannelAlreadyExists, ChannelDoesNotExist
 
 from tornado import testing, gen
-from unittest.mock import Mock
+from mock import Mock
 
 from .base_async_test import BaseAsyncTest
 

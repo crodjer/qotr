@@ -2,7 +2,7 @@ import json
 import unittest
 
 from qotr.message import Message, MessageTypes
-from unittest.mock import Mock
+from mock import Mock
 
 from .utils import m
 
