@@ -11,21 +11,24 @@
       {{#link-to 'home' class="navbar-brand" }}QOTR{{/link-to }}
     </div>
 
+    {{#hide-nav-on-click }}
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li>{{#link-to 'channels.new' }}New{{/link-to }}</li>
+        <li class='hide-on-click'>
+          {{#link-to 'channels.new' }}New{{/link-to }}
+        </li>
       </ul>
 
       {{#if model }}
       <ul class="nav navbar-nav navbar-right">
-        <li>
+        <li class='hide-on-click'>
           <a class="cursor glyphicon glyphicon-edit" {{ action "editNick" }} >
             <strong>{{ model.nick }}</strong>
           </a>
         </li>
         {{!--
-        <li>
+        <li class='hide-on-click'>
           {{# if model.connected }}
             <a class="cursor glyphicon glyphicon-log-out"
               {{ action "disconnect" }}>
@@ -42,5 +45,6 @@
       </ul>
       {{/if }}
     </div><!-- /.navbar-collapse -->
+    {{/hide-nav-on-click }}
   </div><!-- /.container-fluid -->
 </nav>
