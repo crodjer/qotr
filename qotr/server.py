@@ -1,15 +1,17 @@
 # pylint: disable=W0223, W0221
 import logging
 
-from qotr.config import config
+from qotr.base_handler import BaseHandler
 from qotr.channels import Channels
 from qotr.channel_handler import ChannelHandler
 from qotr.chat_handler import ChatHandler
+from qotr.config import config
+
 from tornado import ioloop, web
 
 L = logging.getLogger('qotr')
 
-class IndexHandler(web.RequestHandler):
+class IndexHandler(BaseHandler):
 
     def get(self, _=None):
         self.render('../dist/index.html')

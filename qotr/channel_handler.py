@@ -1,15 +1,14 @@
 import logging
 
+from .base_handler import BaseHandler
 from .channels import Channels
-from .exceptions import ChannelAlreadyExists
 from .config import config
-
-from tornado import web
+from .exceptions import ChannelAlreadyExists
 
 L = logging.getLogger(__name__)
 
 # pylint: disable=W0223
-class ChannelHandler(web.RequestHandler):
+class ChannelHandler(BaseHandler):
     '''
     Allows creation of channels.
     '''

@@ -9,5 +9,7 @@ class Production(Base):
 
     host = os.environ.get('HOST') or 'localhost'
     port = os.environ.get('PORT')
+
     debug = False
     allowed_origin = None
+    redirect_to_https = True
