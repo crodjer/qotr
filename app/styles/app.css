@@ -7,10 +7,7 @@
 }
 
 footer {
-    padding: 5px;
-    position: absolute;
-    bottom: 0px;
-    float: right;
+    float: left;
 }
 
 #sidebar-wrapper {
@@ -34,6 +31,8 @@ footer {
 }
 
 #sidebar-wrapper footer {
+    position: absolute;
+    bottom: 0;
     padding: 5px 10px;
     font-size: 12px;
     margin-bottom: 40px;
