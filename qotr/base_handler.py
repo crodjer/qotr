@@ -15,5 +15,5 @@ class BaseHandler(web.RequestHandler):
            self.request.method == 'GET' and \
            protocol == 'http':
             self.redirect('https://{}{}'.format(
-                self.request.host.split(':'), self.request.path
+                self.request.host.split(':')[0], self.request.path
             ), permanent=True)
