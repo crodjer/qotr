@@ -1,7 +1,7 @@
 {
   "name": "qotr",
-  "version": "0.0.0",
-  "description": "Small description for qotr goes here",
+  "version": "0.0.1",
+  "description": "Off-the record chats, quickly",
   "private": true,
   "directories": {
     "doc": "doc",
