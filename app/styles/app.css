@@ -66,9 +66,7 @@ footer {
     border-style: solid;
     border-color: #D7D7D7;
     border-width: 1px 1px 0 0;
-    padding: 5px;
-    height: 35px;
-    overflow: hidden;
+    padding: 0 5px;
     resize: none;
     width: 100%;
 }

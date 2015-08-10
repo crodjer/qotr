@@ -2,6 +2,8 @@ import Ember from 'ember';
 
 export default Ember.TextArea.extend({
 
+  rows: 1,
+
   keyDown: function (event) {
     if (event.which === 13 && ! event.shiftKey) {
       // Don't insert newlines when submitting with enter
