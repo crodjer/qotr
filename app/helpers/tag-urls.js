@@ -17,7 +17,6 @@ export default Ember.Handlebars.makeBoundHelper(function(value) {
 
   value = Ember.Handlebars.Utils.escapeExpression(value);
 
-  console.log(splitRe.source);
   value.split(splitRe).forEach(function (slice) {
     if (slice.match(re_weburl)) {
       urlMap[slice] = toTag(slice);
