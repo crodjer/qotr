@@ -11,7 +11,9 @@ class BaseHandler(web.RequestHandler):
 
         protocol = self.request.headers.get('x-forwarded-proto')
 
-        if config.redirect_to_https and protocol == 'http':
+        if config.redirect_to_https and \
+           self.request.method == 'GET' and \
+           protocol == 'http':
             self.redirect('https://{}{}'.format(
                 self.request.host.split(':'), self.request.path
             ), permanent=True)
