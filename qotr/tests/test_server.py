@@ -29,6 +29,8 @@ class TestChannelHandler(testing.AsyncHTTPTestCase):
     def test_https_redirect(self):
         _old_cfg = config.redirect_to_https
         config.redirect_to_https = True
-        response = self.fetch('/c/foo', follow_redirects=False)
+        response = self.fetch('/c/foo', follow_redirects=False, headers={
+            'x-forwarded-proto': 'http'
+        })
         config.redirect_to_https = _old_cfg
         self.assertEqual(301, response.code)

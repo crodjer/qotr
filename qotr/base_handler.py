@@ -9,8 +9,9 @@ class BaseHandler(web.RequestHandler):
 
     def prepare(self):
 
-        if self.request.protocol == "http" and config.redirect_to_https:
-            self.redirect(
-                self.request.full_url().replace('http:', 'https:'),
-                permanent=True
-            )
+        protocol = self.request.headers.get('x-forwarded-proto')
+
+        if config.redirect_to_https and protocol == 'http':
+            self.redirect('https://{}{}'.format(
+                self.request.host.split(':'), self.request.path
+            ), permanent=True)
