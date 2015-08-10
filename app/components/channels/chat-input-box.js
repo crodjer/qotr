@@ -18,6 +18,15 @@ export default Ember.TextArea.extend({
       // SHIFT+ENTER, because that should just insert a new line
       this._super(event);
     }
-  }
+  },
 
+  onEnable: Ember.observer('disabled', function () {
+    var that = this;
+
+    if (!this.get('disabled')) {
+      Ember.run.later(function () {
+        that.$().focus();
+      });
+    }
+  })
 });
