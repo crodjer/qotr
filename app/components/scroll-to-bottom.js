@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  scrollToBottom: Ember.observer('items.@each', function () {
+  scrollToBottom: Ember.observer('items.[]', function () {
     // A bad hack which scrolls the page to bottom on message push.
     // Possibly better kept at the corresponding view.
     var html = Ember.$('html'),

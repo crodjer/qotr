@@ -88,6 +88,6 @@ test('it gets the list of members', function(assert) {
       done();
     }
 
-    channel.addObserver('members.@each', onMembers);
+    channel.addObserver('members.[]', onMembers);
   });
 });

@@ -12,7 +12,7 @@ var punctuation = "[\.,]",
       "\\s+",
     ].join('|'));
 
-export default Ember.Handlebars.makeBoundHelper(function(value) {
+export default Ember.Helper.helper(function(value) {
   var urlMap = {};
 
   value = Ember.Handlebars.Utils.escapeExpression(value);

@@ -59,7 +59,7 @@ export default Ember.Controller.extend({
     return !this.get('model.connected');
   }),
 
-  onMessage: Ember.observer('model.messages.@each', function () {
+  onMessage: Ember.observer('model.messages.[]', function () {
     var messages = this.get('model.messages'),
         lastMessage = messages[messages.length - 1];
 
