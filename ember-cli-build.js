@@ -1,9 +1,12 @@
-/* global require, module */
-var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+/* global require, module, process */
+var EmberApp = require('ember-cli/lib/broccoli/ember-app'),
+    cdnPrefix = process.env.CDN_PREFIX || '';
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
-    // Add options here
+    fingerprint: {
+      prepend: cdnPrefix
+    }
   });
 
   // Use `app.import` to add additional libraries to the generated
