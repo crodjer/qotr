@@ -62,11 +62,14 @@ footer {
     bottom: 0;
 }
 
-#chat-input input {
+#chat-input textarea {
     border-style: solid;
     border-color: #D7D7D7;
-    border-width: 1px 0 0 0;
+    border-width: 1px 1px 0 0;
     padding: 5px;
+    height: 35px;
+    overflow: hidden;
+    resize: none;
     width: 100%;
 }
 
@@ -121,7 +124,7 @@ footer {
         margin-left: 200px;
     }
 
-    #chat-input input {
+    #chat-input {
         width: calc(100% - 200px);
     }
 
