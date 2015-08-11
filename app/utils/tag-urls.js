@@ -1,5 +1,4 @@
 /* global re_weburl */
-import Ember from 'ember';
 
 function toTag (url) {
   return '<a target="_blank" href="' + url + '">' + url + '</a>';
@@ -12,12 +11,10 @@ var punctuation = "[\.,]",
       "\\s+",
     ].join('|'));
 
-export default Ember.Helper.helper(function(value) {
+export default function tagUrls(message) {
   var urlMap = {};
 
-  value = Ember.Handlebars.Utils.escapeExpression(value);
-
-  value.split(splitRe).forEach(function (slice) {
+  message.split(splitRe).forEach(function (slice) {
     if (slice.match(re_weburl)) {
       urlMap[slice] = toTag(slice);
     }
@@ -27,8 +24,8 @@ export default Ember.Helper.helper(function(value) {
     var source = url,
         tag = urlMap[url];
 
-    value = value.replace(source, tag);
+    message = message.replace(source, tag);
   });
 
-  return new Ember.Handlebars.SafeString(value);
-});
+  return message;
+}
