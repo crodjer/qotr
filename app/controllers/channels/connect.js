@@ -49,7 +49,7 @@ export default Ember.Controller.extend({
   },
 
   chataMessage: null,
-  makeDefaultNick: false,
+  makeDefaultNick: true,
   editingNickText: null,
   editingNick: false,
   focused: true,
