@@ -1,8 +1,10 @@
 import Ember from 'ember';
 
+import lineBreaks from '../utils/line-breaks';
 import tagUrls from '../utils/tag-urls';
 
 var processors = [
+  lineBreaks,
   tagUrls
 ];
 
