@@ -15,7 +15,6 @@ class ChatHandler(websocket.WebSocketHandler):
     nick = None
     channel = None
     channel_id = None
-    authenticated = False
 
     def __init__(self, *args, **kwargs):
         super(ChatHandler, self).__init__(*args, **kwargs)
