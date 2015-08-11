@@ -75,7 +75,8 @@ test('it connects to a existing channel correctly', function(assert) {
 });
 
 test('it gets the list of members', function(assert) {
-  assert.expect(1);
+  assert.expect(2);
+
   var factory = this.factory(),
       channel = factory.create(),
       done = assert.async();
@@ -84,7 +85,9 @@ test('it gets the list of members', function(assert) {
     channel.connect();
 
     function onMembers () {
-      assert.equal(channel.get('members')[0], channel.nick);
+      var member = channel.get('members')[0];
+      assert.equal(member.nick, channel.nick);
+      assert.equal(member.type, 'self');
       done();
     }
 
