@@ -10,7 +10,7 @@ class Base(object):
     debug = False
     redirect_to_https = False
 
-    allowed_origin = "*"
+    allowed_origins = "*"
     channel_timeout = 600 # A channel is kept for 10 minutes.
     cleanup_period = channel_timeout / 2
 
