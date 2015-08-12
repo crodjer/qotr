@@ -18,8 +18,6 @@ def set_cors_headers(handler):
     if not origin:
         return
 
-    L.debug('Setting CORS headers for: %s based on %s', origin,
-            ALLOWED_ORIGINS)
     if origin in ALLOWED_ORIGINS or any(fnmatch(origin, o)
                                         for o in ALLOWED_ORIGINS):
         handler.set_header("Access-Control-Allow-Origin", origin)

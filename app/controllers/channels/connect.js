@@ -59,6 +59,19 @@ export default Ember.Controller.extend({
     return !this.get('model.connected');
   }),
 
+  members: Ember.computed('model.members', function () {
+    var self_id = this.get('model.member_id'),
+        members = this.get('model.members');
+
+    return Object.keys(members).map(function (id) {
+      return {
+        id: id,
+        nick: members[id],
+        type: id === self_id ? 'self' : 'friend'
+      };
+    });
+  }),
+
   onMessage: Ember.observer('model.messages.[]', function () {
     var messages = this.get('model.messages'),
         lastMessage = messages[messages.length - 1];

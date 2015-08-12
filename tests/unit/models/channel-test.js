@@ -1,3 +1,4 @@
+import UnencryptedError from '../../../utils/unencrypted-error';
 import { moduleFor, test } from 'ember-qunit';
 
 moduleFor('model:channel', 'Unit | Model | channel', {
@@ -12,9 +13,15 @@ test('it can be created', function(assert) {
   assert.equal(channel.decrypt(channel.encrypt('foo')), 'foo');
 });
 
-test('it ignores text which isn\'t encrypted', function(assert) {
+test('it does not allow un-encrypted text', function(assert) {
   var channel = this.factory().create();
-  assert.equal(channel.decrypt('foo'), 'foo');
+  assert.expect(1);
+
+  try {
+    channel.decrypt('foo');
+  } catch (e) {
+    assert.ok(e instanceof UnencryptedError);
+  }
 });
 
 test('it creates an actual channel on server', function(assert) {
@@ -75,22 +82,25 @@ test('it connects to a existing channel correctly', function(assert) {
 });
 
 test('it gets the list of members', function(assert) {
-  assert.expect(2);
+  assert.expect(1);
 
   var factory = this.factory(),
-      channel = factory.create(),
+      channel = factory.create({
+        nick: 'foo'
+      }),
       done = assert.async();
 
   channel.start().then(function(/* resp */) {
     channel.connect();
 
     function onMembers () {
-      var member = channel.get('members')[0];
-      assert.equal(member.nick, channel.nick);
-      assert.equal(member.type, 'self');
-      done();
+      var member = channel.get('members')[channel.member_id];
+      if (member) {
+        assert.equal(member, channel.nick);
+        done();
+      }
     }
 
-    channel.addObserver('members.[]', onMembers);
+    channel.addObserver('members', onMembers);
   });
 });

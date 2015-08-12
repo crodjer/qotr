@@ -1,10 +1,12 @@
 import Ember from 'ember';
 import shortid from 'npm:shortid';
 import config from '../config/environment';
+import UnencryptedError from '../utils/unencrypted-error';
 
 var ivSeparator = '|',
     OUT = { direction: "out" },
-    IN = { direction: "in" };
+    IN = { direction: "in" },
+    mayBeUnsafe = 'Continuing this chat is not safe.';
 
 var host = window.location.hostname,
     protocolSuffix = window.location.protocol.replace(/^http/, '') + '//',
@@ -25,7 +27,7 @@ function mkMessage() {
 
 export default Ember.Object.extend({
   id: null,
-  id_b64: null,
+  member_id: null,
   nick: null,
   salt: null,
   password: null,
@@ -41,8 +43,7 @@ export default Ember.Object.extend({
       this.set('password', shortid.generate());
     }
 
-    this.set('id_b64', e64(this.get('id')));
-    this.set('members', Ember.A());
+    this.set('members', {});
     this.set('messages', Ember.A());
 
     if (!this.get('nick')) {
@@ -54,11 +55,20 @@ export default Ember.Object.extend({
     return forge.pkcs5.pbkdf2(this.get('password'), this.get('salt'), 32, 32);
   }),
 
+  key_hmac: Ember.computed('key', function () {
+    var hmac = forge.hmac.create();
+    hmac.start('sha256', this.get('key'));
+    return hmac.digest().toHex();
+  }),
+
+  key_hmac_b64: Ember.computed('key_hmac', function () {
+    return e64(this.get('key_hmac'));
+  }),
+
   start: function () {
     return Ember.$.post(httpPrefix + '/channels/new', {
       id: this.id,
-      salt: e64(this.salt),
-      key_hash: this.get('key_hash')
+      meta: e64(this.salt)
     });
   },
 
@@ -98,12 +108,13 @@ export default Ember.Object.extend({
         input = forge.util.createBuffer(str);
     cipher.update(input);
     cipher.finish();
-    return [this.id, iv, cipher.output.data].map(e64).join(ivSeparator);
+    return [this.get('key_hmac'), iv,
+            cipher.output.data].map(e64).join(ivSeparator);
   },
 
   decrypt: function (str) {
-    if (str.indexOf(this.id_b64) !== 0) {
-      return str;
+    if (str.indexOf(this.get('key_hmac_b64')) !== 0) {
+      throw new UnencryptedError();
     }
 
     var byteArray = str.split(ivSeparator).map(d64),
@@ -132,25 +143,37 @@ export default Ember.Object.extend({
   },
 
   onServerMessage: function (message) {
-    var that = this;
+    var that = this,
+        body = message.body;
 
     switch(message.kind) {
-    case "salt":
-      this.set('salt', d64(message.body));
+    case "config":
+      this.set('salt', d64(body.meta));
+      this.set('member_id', body.id);
       this.send('join', this.get('nick'));
       break;
     case "join":
       that.send('members');
       break;
     case "members":
-      this.set('members', Ember.A(message.body.map(function (nick) {
-        nick = that.decrypt(nick);
+      var members = {};
+      Object.keys(body).forEach(function (id) {
+        try {
+          members[id] = that.decrypt(body[id]);
+        } catch (e) {
+          if (e instanceof UnencryptedError) {
+            members[id] = body[id];
+            that.messages.pushObject(mkMessage({
+              'kind': 'error',
+              'body': 'Nick: ' + body[id] + ' isn\'t encrypted. ' + mayBeUnsafe
+            }, IN));
+          } else {
+            throw e;
+          }
+        }
+      });
 
-        return {
-          type: nick === that.nick ? "self":"friend",
-          nick: nick
-        };
-      })));
+      this.set('members', members);
       break;
     case "pong":
       break;
@@ -161,15 +184,27 @@ export default Ember.Object.extend({
   },
 
   onFriendMessage: function (message) {
-    if (message.body) {
-      message.body = this.decrypt(message.body);
-    }
+    var members = this.get('members');
+    message.sender = members[message.sender] || message.sender;
 
-    message.sender = this.decrypt(message.sender);
+    if (message.body) {
+      try {
+        message.body = this.decrypt(message.body);
+      } catch (e) {
+        if (e instanceof UnencryptedError) {
+          message.kind = 'error';
+          message.body = 'Received an unencrypted message from ' +
+            message.sender + '. ' + mayBeUnsafe;
+        } else {
+          throw e;
+        }
+      }
+    }
 
     switch(message.kind) {
     case "join":
       this.send('members');
+      message.sender = message.body;
       this.messages.pushObject(mkMessage(message, IN));
       break;
     case "part":
@@ -180,6 +215,10 @@ export default Ember.Object.extend({
       this.messages.pushObject(mkMessage(message, IN));
       break;
     case "nick":
+      this.messages.pushObject(mkMessage(message, {
+        oldNick: message.sender,
+        newNick: message.body
+      }, IN));
       this.send('members');
       break;
     case "error":

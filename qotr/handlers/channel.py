@@ -25,13 +25,13 @@ class Channel(Base):
 
     def post(self):
         channel_id = self.get_argument('id')
-        salt = self.get_argument('salt')
+        meta = self.get_argument('meta')
 
         try:
-            Channels.create(channel_id, salt)
+            Channels.create(channel_id, meta)
             self.write({
                 "id": channel_id,
-                "salt": salt
+                "meta": meta
             })
         except ChannelAlreadyExists:
             self.set_status(409) # Conflict

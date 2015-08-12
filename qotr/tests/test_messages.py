@@ -10,17 +10,17 @@ class TestMessage(unittest.TestCase):
 
     def test_raw_object(self):
         message = Message.from_object(
-            m("chat", "test", Mock(nick="test"))
+            m("chat", "test", Mock(nick="test", id="foo"))
         )
 
-        self.assertEqual(m("chat", "test", "test"), message.as_json())
+        self.assertEqual(m("chat", "test", "foo"), message.as_json())
 
     def test_object(self):
         message = Message.from_object(
-            m(MessageTypes["chat"], "test", Mock(nick="test"))
+            m(MessageTypes["chat"], "test", Mock(nick="test", id="foo"))
         )
 
-        self.assertEqual(m("chat", "test", "test"), message.as_json())
+        self.assertEqual(m("chat", "test", "foo"), message.as_json())
 
     def test_json(self):
         obj = m("chat", "test")

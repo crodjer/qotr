@@ -7,7 +7,7 @@ class BaseAsyncTest(testing.AsyncTestCase):
 
     port = None
     channel_id = 'test-channel'
-    salt = 'common'
+    meta = 'common'
     key_hash = 'test-key-hmac'
 
     def setUp(self):
