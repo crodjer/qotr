@@ -13,7 +13,7 @@ def set_cors_headers(handler):
     '''
 
 
-    origin = handler.request.headers.get('Origin')
+    origin = handler.request.headers.get('Origin', '')
 
     L.debug('Setting CORS headers for: %s based on %s', origin,
             ALLOWED_ORIGINS)
