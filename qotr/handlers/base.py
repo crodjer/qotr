@@ -1,15 +1,20 @@
+from fnmatch import fnmatch
 from tornado import web
 from qotr.config import config
+
+ALLOWED_ORIGINS = [o.strip() for o in config.allowed_origin.split(',')]
 
 def set_cors_headers(handler):
     '''
     Given a handler, set the CORS headers on it.
     '''
 
-    if config.allowed_origin:
 
-        handler.set_header("Access-Control-Allow-Origin",
-                           config.allowed_origin)
+    origin = handler.request.host.split(':')[0]
+
+    if origin in ALLOWED_ORIGINS or any(fnmatch(origin, o)
+                                        for o in ALLOWED_ORIGINS):
+        handler.set_header("Access-Control-Allow-Origin", origin)
         handler.set_header("Access-Control-Allow-Headers", "Content-Type")
 
 # pylint: disable=W0223
