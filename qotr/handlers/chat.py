@@ -33,8 +33,11 @@ class Chat(websocket.WebSocketHandler):
         try:
             self.channel = Channels.get(self.channel_id)
             self.id = self.channel.new_id()
-            # Tell the user the channel's salt.
-            Message(MT.salt, body=self.channel.salt).send(self)
+            # Tell the user their id and the channel's meta data.
+            Message(MT.config, body={
+                "id": self.id,
+                "meta": self.channel.meta
+            }).send(self)
             self.channel.connections += 1
         except ChannelDoesNotExist:
             self.respond_with_error("Channel does not exist.")

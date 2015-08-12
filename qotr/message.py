@@ -6,7 +6,7 @@ MessageTypes = Enum('MessageTypes', [
     'ping',
     'pong',
     'nick',
-    'salt',
+    'config',
     'chat',
     'part',
     'members',
@@ -35,7 +35,7 @@ class Message(object):
         return {
             "kind": self.kind.name,
             "body": self.body,
-            "sender": self.sender.nick if self.sender else None
+            "sender": self.sender.id if self.sender else None
         }
 
     def send(self, client):

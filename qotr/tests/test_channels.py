@@ -12,7 +12,7 @@ from .base_async_test import BaseAsyncTest
 class TestChannels(unittest.TestCase):
 
     channel_id = 'test-channel'
-    salt = 'common'
+    meta = 'common'
     member = Mock(nick='foo')
 
     def setUp(self):
@@ -20,24 +20,24 @@ class TestChannels(unittest.TestCase):
         Channels.reset()
 
     def test_create(self):
-        Channels.create(self.channel_id, self.salt)
+        Channels.create(self.channel_id, self.meta)
         channel = Channels.get(self.channel_id)
-        self.assertEqual(self.salt, channel.salt)
+        self.assertEqual(self.meta, channel.meta)
 
     def test_existing(self):
         self.assertFalse(Channels.exists(self.channel_id))
-        Channels.create(self.channel_id, self.salt)
+        Channels.create(self.channel_id, self.meta)
         self.assertTrue(Channels.exists(self.channel_id))
 
         with self.assertRaises(ChannelAlreadyExists):
-            Channels.create(self.channel_id, self.salt)
+            Channels.create(self.channel_id, self.meta)
 
     def test_does_not_exist(self):
         with self.assertRaises(ChannelDoesNotExist):
             Channels.get(self.channel_id)
 
     def test_remove(self):
-        Channels.create(self.channel_id, self.salt)
+        Channels.create(self.channel_id, self.meta)
         self.assertEqual(1, Channels.count())
         Channels.remove(self.channel_id)
         self.assertEqual(0, Channels.count())
@@ -45,15 +45,17 @@ class TestChannels(unittest.TestCase):
         self.assertEqual(0, Channels.count())
 
     def test_join_part(self):
-        channel = Channels.create(self.channel_id, self.salt)
+        channel = Channels.create(self.channel_id, self.meta)
         channel.join(self.member)
         self.assertTrue(channel.has(self.member))
-        self.assertEqual([self.member.nick], channel.members)
+        self.assertEqual({
+            self.member.id: self.member.nick
+        }, channel.members)
         channel.part(self.member)
-        self.assertEqual([], channel.members)
+        self.assertEqual({}, channel.members)
 
     def test_reset(self):
-        Channels.create(self.channel_id, self.salt)
+        Channels.create(self.channel_id, self.meta)
         self.assertTrue(Channels.exists(self.channel_id))
         Channels.reset()
         self.assertFalse(Channels.exists(self.channel_id))

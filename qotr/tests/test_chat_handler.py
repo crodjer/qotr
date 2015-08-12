@@ -15,11 +15,11 @@ class TestChatHandler(BaseAsyncTest):
 
     port = None
     channel_id = 'test-channel'
-    salt = 'common'
+    meta = 'common'
 
     def setUp(self):
         super(TestChatHandler, self).setUp()
-        Channels.create(self.channel_id, self.salt)
+        Channels.create(self.channel_id, self.meta)
 
     def _mk_connection(self):
         return websocket.websocket_connect(
@@ -29,8 +29,9 @@ class TestChatHandler(BaseAsyncTest):
     @gen.coroutine
     def _mk_client(self, nick, join=True):
         c = yield self._mk_connection()
-        # Discard the salt.
-        yield c.read_message()
+        # Discard the config
+        response = yield c.read_message()
+        c.config = json.loads(response)['body']
 
         if join:
             send(c, m('join', nick))
@@ -45,8 +46,8 @@ class TestChatHandler(BaseAsyncTest):
         response = yield c.read_message()
         message = json.loads(response)
 
-        self.assertEqual('salt', message['kind'])
-        self.assertEqual(self.salt, message['body'])
+        self.assertEqual('config', message['kind'])
+        self.assertEqual(self.meta, message['body']['meta'])
 
     @testing.gen_test
     def test_join(self):
@@ -84,7 +85,7 @@ class TestChatHandler(BaseAsyncTest):
         yield self._mk_client(nick_2)
         yield c1.read_message() # C2's join
 
-        self.assertEqual({nick_1, nick_2}, set(channel.members))
+        self.assertEqual({nick_1, nick_2}, set(channel.members.values()))
 
     @testing.gen_test
     def test_nick_change(self):
@@ -100,7 +101,7 @@ class TestChatHandler(BaseAsyncTest):
         self.assertEqual({
             "kind": "nick",
             "body": "foo-new",
-            "sender": "foo"
+            "sender": c1.config['id']
         }, json.loads(response))
 
     @testing.gen_test
@@ -116,7 +117,7 @@ class TestChatHandler(BaseAsyncTest):
         response = yield c2.read_message()
 
         self.assertEqual({
-            'sender': 'foo',
+            'sender': c1.config['id'],
             'kind': 'chat',
             'body': 'hey!'
         }, json.loads(response))
@@ -134,7 +135,7 @@ class TestChatHandler(BaseAsyncTest):
         response = yield c1.read_message()
 
         self.assertEqual({
-            'sender': 'bar',
+            'sender': c2.config['id'],
             'kind': 'part',
             'body': None
         }, json.loads(response))
@@ -152,7 +153,9 @@ class TestChatHandler(BaseAsyncTest):
         c = yield self._mk_client('foo')
         send(c, m('members'))
         response = yield c.read_message()
-        self.assertEqual(m('members', ['foo']), json.loads(response))
+        self.assertEqual(m('members', {
+            c.config['id']: 'foo'
+        }), json.loads(response))
 
     @testing.gen_test
     def test_invalid_message_object(self):
