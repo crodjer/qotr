@@ -11,5 +11,5 @@ class Production(Base):
     port = os.environ.get('PORT')
 
     debug = False
-    allowed_origin = None
+    allowed_origin = os.environ.get('ALLOWED_ORIGIN')
     redirect_to_https = True

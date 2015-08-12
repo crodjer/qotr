@@ -1,26 +1,19 @@
 import logging
 
-from .base_handler import BaseHandler
-from .channels import Channels
-from .config import config
-from .exceptions import ChannelAlreadyExists
+from .base import Base, set_cors_headers
+from qotr.channels import Channels
+from qotr.exceptions import ChannelAlreadyExists
 
 L = logging.getLogger(__name__)
 
 # pylint: disable=W0223
-class ChannelHandler(BaseHandler):
+class Channel(Base):
     '''
     Allows creation of channels.
     '''
 
     def set_default_headers(self):
-        if config.allowed_origin:
-
-            self.set_header("Access-Control-Allow-Origin",
-                            config.allowed_origin)
-            self.set_header("Access-Control-Allow-Methods", "POST")
-            self.set_header("Access-Control-Allow-Headers", "Content-Type")
-
+        set_cors_headers(self)
         self.set_header('Content-Type', 'application/json')
 
     def get(self):

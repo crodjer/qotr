@@ -1,33 +1,24 @@
-# pylint: disable=W0223, W0221
 import logging
 
-from qotr.base_handler import BaseHandler
 from qotr.channels import Channels
-from qotr.channel_handler import ChannelHandler
-from qotr.chat_handler import ChatHandler
 from qotr.config import config
+from qotr import handlers
 
 from tornado import ioloop, web
 
 L = logging.getLogger('qotr')
-
-class IndexHandler(BaseHandler):
-
-    def get(self, _=None):
-        self.render('../dist/index.html')
 
 def make_application():
     ioloop.PeriodicCallback(Channels.cleanup,
                             config.cleanup_period * 1000).start()
 
     return web.Application([
-        (r"/()", IndexHandler),
-        (r"/c/([^/]+)", IndexHandler),
-        (r"/channels/", ChannelHandler),
-        (r"/channels/new", ChannelHandler),
-        (r"/channels/stats", ChannelHandler),
-        (r"/channels/([^/]+)", ChatHandler),
-        (r"/(.*)", web.StaticFileHandler, {'path': 'dist/'})
+        (r"/()", handlers.Home),
+        (r"/c/([^/]+)", handlers.Home),
+        (r"/channels/", handlers.Channel),
+        (r"/channels/new", handlers.Channel),
+        (r"/channels/([^/]+)", handlers.Chat),
+        (r"/(.*)", handlers.Static, {'path': 'dist/'})
 
     ], debug=config.debug)
 
