@@ -27,7 +27,6 @@ function mkMessage() {
 
 export default Ember.Object.extend({
   id: null,
-  id_b64: null,
   member_id: null,
   nick: null,
   salt: null,
@@ -44,7 +43,6 @@ export default Ember.Object.extend({
       this.set('password', shortid.generate());
     }
 
-    this.set('id_b64', e64(this.get('id')));
     this.set('members', {});
     this.set('messages', Ember.A());
 
@@ -55,6 +53,16 @@ export default Ember.Object.extend({
 
   key: Ember.computed('salt', 'password', function () {
     return forge.pkcs5.pbkdf2(this.get('password'), this.get('salt'), 32, 32);
+  }),
+
+  key_hmac: Ember.computed('key', function () {
+    var hmac = forge.hmac.create();
+    hmac.start('sha256', this.get('key'));
+    return hmac.digest().toHex();
+  }),
+
+  key_hmac_b64: Ember.computed('key_hmac', function () {
+    return e64(this.get('key_hmac'));
   }),
 
   start: function () {
@@ -100,11 +108,12 @@ export default Ember.Object.extend({
         input = forge.util.createBuffer(str);
     cipher.update(input);
     cipher.finish();
-    return [this.id, iv, cipher.output.data].map(e64).join(ivSeparator);
+    return [this.get('key_hmac'), iv,
+            cipher.output.data].map(e64).join(ivSeparator);
   },
 
   decrypt: function (str) {
-    if (str.indexOf(this.id_b64) !== 0) {
+    if (str.indexOf(this.get('key_hmac_b64')) !== 0) {
       throw new UnencryptedError();
     }
 
@@ -127,7 +136,7 @@ export default Ember.Object.extend({
     if (kind === 'chat') {
       this.messages.pushObject(mkMessage(message, OUT, { sender: "Me" }));
     }
-    if (body !== null && kind !== 'chat') {
+    if (body !== null) {
       message.body = this.encrypt(message.body);
     }
     this.socket.send(JSON.stringify(message));
@@ -184,7 +193,7 @@ export default Ember.Object.extend({
       } catch (e) {
         if (e instanceof UnencryptedError) {
           message.kind = 'error';
-          message.body = 'Received an unencrypted message from: ' +
+          message.body = 'Received an unencrypted message from ' +
             message.sender + '. ' + mayBeUnsafe;
         } else {
           throw e;
