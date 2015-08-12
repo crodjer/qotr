@@ -1,7 +1,10 @@
+import logging
+
 from fnmatch import fnmatch
 from tornado import web
 from qotr.config import config
 
+L = logging.getLogger(__name__)
 ALLOWED_ORIGINS = [o.strip() for o in config.allowed_origin.split(',')]
 
 def set_cors_headers(handler):
@@ -12,6 +15,8 @@ def set_cors_headers(handler):
 
     origin = handler.request.host.split(':')[0]
 
+    L.debug('Setting CORS headers for: %s based on %s', origin,
+            ALLOWED_ORIGINS)
     if origin in ALLOWED_ORIGINS or any(fnmatch(origin, o)
                                         for o in ALLOWED_ORIGINS):
         handler.set_header("Access-Control-Allow-Origin", origin)
