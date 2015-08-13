@@ -16,7 +16,7 @@ QOTR is a application through which you can quickly spawn a encrypted chat with
 your friends. The messages are encrypted before they leave your browser. The
 QOTR servers cannot understand what is being said.
 
-For chats 256 bit AES-CES encryption is used. The key generation happens in the
+For chats 256 bit AES-CBC encryption is used. The key generation happens in the
 browser. To keep it easy to share a chat room, the password is provided as a location hash. Browsers do not send a location hash to the server.
 
 Try it out at the `demo server  <https://qotr.herokuapp.com/>`_.
