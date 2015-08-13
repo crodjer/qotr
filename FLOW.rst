@@ -18,8 +18,10 @@ Connecting to channel
    created already on the server.
  - As soon as a connection is established, the server sends back a member id
    and the salt.
- - The client then using the salt and the key (shared through an independent
-   way, certainly not through the QOTR servers), generate an AES key.
+ - The client then using the salt and the key (shared independently of QOTR)
+   generates an AES key. Currently, the application uses location hashes to make
+   sharing of channels convenient, while making sure that the password isn't
+   sent to the server.
 
 Messages
 ========
@@ -40,6 +42,15 @@ Messages
  - The server is completely unaware of any encryption whatsoever, except storing
    the salt. Although, it is stored under the name 'meta', which need not be an
    encryption salt.
+
+Code
+====
+
+ - The high level encryption logic lies in the `channel model
+   <https://github.com/crodjer/qotr/blob/master/app/models/channel.js>`_.
+ - Although the front-end application isn't as well tested as the server is,
+   there are some tests for encryption and channel communication. But they are
+   not run with the CI.
 
 .. _shortid: https://github.com/dylang/shortid
 .. _forge: https://github.com/digitalbazaar/forge
