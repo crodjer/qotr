@@ -6,7 +6,8 @@ import InvalidEncryptionError from '../utils/invalid-encryption-error';
 var ivSeparator = '|',
     OUT = { direction: "out" },
     IN = { direction: "in" },
-    mayBeUnsafe = 'Continuing this chat is not safe.';
+    mayBeUnsafe = ' is not encrypted (or properly encrypted). ' +
+      'Continuing this chat is not safe.';
 
 var host = window.location.hostname,
     protocolSuffix = window.location.protocol.replace(/^http/, '') + '//',
@@ -162,7 +163,7 @@ export default Ember.Object.extend({
             members[id] = body[id];
             that.messages.pushObject(mkMessage({
               'kind': 'error',
-              'body': 'Nick: ' + body[id] + ' isn\'t encrypted. ' + mayBeUnsafe
+              'body': 'Nick: ' + body[id] + mayBeUnsafe
             }, IN));
           } else {
             throw e;
@@ -189,9 +190,10 @@ export default Ember.Object.extend({
         message.body = this.decrypt(message.body);
       } catch (e) {
         if (e instanceof InvalidEncryptionError) {
-          message.kind = 'error';
-          message.body = 'Received an unencrypted message from ' +
-            message.sender + '. ' + mayBeUnsafe;
+          this.messages.pushObject(mkMessage({
+            'kind': 'error',
+            'body': 'A message from ' + message.sender + mayBeUnsafe
+          }, IN));
         } else {
           throw e;
         }
