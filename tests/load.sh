@@ -16,7 +16,7 @@ if [[ $HOST != http* ]]; then
     exit 1
 fi
 
-curl -sX POST $HOST/channels/new -d id=$CHANNEL_ID\&salt=$SALT
+curl -sX POST $HOST/channels/new -d id=$CHANNEL_ID\&meta=$SALT
 echo "\n" # QOTR's response doesn't add a newline.
 echo "Channel path: $HOST/c/$CHANNEL_ID"
 
