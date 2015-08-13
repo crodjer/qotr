@@ -11,7 +11,6 @@ Router.map(function() {
     this.route('new', { path: "/new"});
     this.route('connect', { path: "/:id"});
   });
-  this.route('terms-and-conditions');
 });
 
 export default Router;
