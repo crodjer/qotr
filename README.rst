@@ -23,6 +23,12 @@ Try it out at the `demo server  <https://qotr.herokuapp.com/>`_.
 
 *QOTR is a alpha quality software, not vetted by cryptography experts. Please use it carefully. Avoid sending sensitive data over this.*
 
+*Based on various comments on public forums, I realize that the QOTR is
+confusing. This project doesn't actually implement the OTR protocol. If this is
+too big of a concern, I'll try to come up with a better name. Suggestions are
+welcome.*
+
+
 How it works
 ------------
 
