@@ -1,4 +1,4 @@
-import UnencryptedError from '../../../utils/unencrypted-error';
+import InvalidEncryptionError from '../../../utils/invalid-encryption-error';
 import { moduleFor, test } from 'ember-qunit';
 
 moduleFor('model:channel', 'Unit | Model | channel', {
@@ -20,13 +20,14 @@ test('it does not allow un-encrypted text', function(assert) {
   try {
     channel.decrypt('foo');
   } catch (e) {
-    assert.ok(e instanceof UnencryptedError);
+    assert.ok(e instanceof InvalidEncryptionError);
   }
 });
 
 test('it creates an actual channel on server', function(assert) {
   var channel = this.factory().create(),
       done = assert.async();
+
   channel.start().then(function(resp) {
     assert.equal(channel.id, resp.id);
     done();

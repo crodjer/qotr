@@ -1,4 +1,4 @@
-import UnencryptedError from '../../../utils/unencrypted-error';
+import UnencryptedError from '../../../utils/invalid-encryption-error';
 import { module, test } from 'qunit';
 
 module('Unit | Utility | unencrypted error');

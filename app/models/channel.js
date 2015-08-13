@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import shortid from 'npm:shortid';
 import config from '../config/environment';
-import UnencryptedError from '../utils/unencrypted-error';
+import InvalidEncryptionError from '../utils/invalid-encryption-error';
 
 var ivSeparator = '|',
     OUT = { direction: "out" },
@@ -55,16 +55,6 @@ export default Ember.Object.extend({
     return forge.pkcs5.pbkdf2(this.get('password'), this.get('salt'), 32, 32);
   }),
 
-  key_hmac: Ember.computed('key', function () {
-    var hmac = forge.hmac.create();
-    hmac.start('sha256', this.get('key'));
-    return hmac.digest().toHex();
-  }),
-
-  key_hmac_b64: Ember.computed('key_hmac', function () {
-    return e64(this.get('key_hmac'));
-  }),
-
   start: function () {
     return Ember.$.post(httpPrefix + '/channels/new', {
       id: this.id,
@@ -102,26 +92,33 @@ export default Ember.Object.extend({
     delete this.socket;
   },
 
+  ivHmac: function (iv) {
+    var _hmac = forge.hmac.create();
+    _hmac.start('sha256', this.get('key'));
+    _hmac.update(iv);
+    return _hmac.digest().toHex();
+  },
+
   encrypt: function (str) {
     var iv = forge.random.getBytesSync(32),
         cipher = forge.aes.startEncrypting(this.get('key'), iv),
         input = forge.util.createBuffer(str);
     cipher.update(input);
     cipher.finish();
-    return [this.get('key_hmac'), iv,
-            cipher.output.data].map(e64).join(ivSeparator);
+    return [this.ivHmac(iv), iv, cipher.output.data].map(e64).join(ivSeparator);
   },
 
   decrypt: function (str) {
-    if (str.indexOf(this.get('key_hmac_b64')) !== 0) {
-      throw new UnencryptedError();
-    }
-
     var byteArray = str.split(ivSeparator).map(d64),
-        iv = byteArray[1],
-        text = byteArray[2],
+        ivHmac = byteArray[0] || '',
+        iv = byteArray[1] || '',
+        text = byteArray[2] || '',
         ptext = forge.aes.startDecrypting(this.get('key'), iv),
         newBuffer = forge.util.createBuffer(text);
+
+    if (ivHmac !== this.ivHmac(iv) ){
+      throw new InvalidEncryptionError();
+    }
 
     ptext.update(newBuffer);
     ptext.finish();
@@ -161,7 +158,7 @@ export default Ember.Object.extend({
         try {
           members[id] = that.decrypt(body[id]);
         } catch (e) {
-          if (e instanceof UnencryptedError) {
+          if (e instanceof InvalidEncryptionError) {
             members[id] = body[id];
             that.messages.pushObject(mkMessage({
               'kind': 'error',
@@ -191,7 +188,7 @@ export default Ember.Object.extend({
       try {
         message.body = this.decrypt(message.body);
       } catch (e) {
-        if (e instanceof UnencryptedError) {
+        if (e instanceof InvalidEncryptionError) {
           message.kind = 'error';
           message.body = 'Received an unencrypted message from ' +
             message.sender + '. ' + mayBeUnsafe;
