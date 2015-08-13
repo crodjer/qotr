@@ -23,6 +23,11 @@ Try it out at the `demo server  <https://qotr.herokuapp.com/>`_.
 
 *QOTR is a alpha quality software, not vetted by cryptography experts. Please use it carefully. Avoid sending sensitive data over this.*
 
+How it works
+------------
+
+A fairly detailed description of how the encryption works is available `here <https://github.com/crodjer/qotr/blob/master/FLOW.rst#how-qotr-works>`_.
+
 Why?
 ----
 
@@ -31,11 +36,6 @@ done over common platforms. All encrypted chat services require you to install a
 new client or a plugin. This may be a turn-off for a friend who isn't concerned
 about privacy and encryption. QOTR's goal is to make it convenient (as simple as
 opening a URL) for them to use.
-
-How it works
-------------
-
-A fairly detailed description of how the encryption works is available `here <https://github.com/crodjer/qotr/blob/master/FLOW.rst#how-qotr-works>`_.
 
 
 Development
