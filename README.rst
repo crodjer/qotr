@@ -32,6 +32,12 @@ new client or a plugin. This may be a turn-off for a friend who isn't concerned
 about privacy and encryption. QOTR's goal is to make it convenient (as simple as
 opening a URL) for them to use.
 
+How it works
+------------
+
+A fairly detailed description of how the encryption works is available `here <https://github.com/crodjer/qotr/blob/master/FLOW.rst#how-qotr-works>`_.
+
+
 Development
 ===========
 
