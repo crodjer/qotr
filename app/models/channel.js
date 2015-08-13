@@ -106,13 +106,13 @@ export default Ember.Object.extend({
         input = forge.util.createBuffer(str);
     cipher.update(input);
     cipher.finish();
-    return [this.ivHmac(iv), iv, cipher.output.data].map(e64).join(ivSeparator);
+    return [iv, this.ivHmac(iv), cipher.output.data].map(e64).join(ivSeparator);
   },
 
   decrypt: function (str) {
     var byteArray = str.split(ivSeparator).map(d64),
-        ivHmac = byteArray[0] || '',
-        iv = byteArray[1] || '',
+        iv = byteArray[0] || '',
+        ivHmac = byteArray[1] || '',
         text = byteArray[2] || '',
         ptext = forge.aes.startDecrypting(this.get('key'), iv),
         newBuffer = forge.util.createBuffer(text);
