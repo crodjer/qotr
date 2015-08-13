@@ -1,6 +1,0 @@
- - Post request to create a channel with a salt.
- - Connects via websocket.
- - Server sends the salt.
- - Joins with a nick which is encrypted.
- - All future messages are simply forwarded to the rest of clients.
-
