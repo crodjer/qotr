@@ -9,7 +9,7 @@ Channel creation
    and the other is the password to channel.
  - A 128 byte salt is created using forge_.
  - The client then makes a post request to the server with the channel id and
-   the base 64 encoded salt. The server encodes these.
+   the base 64 encoded salt. The server stores these.
 
 Connecting to channel
 =====================
