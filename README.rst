@@ -1,3 +1,5 @@
+**Based on the comments on public forums, I have realized that there are issues with how the current key transfer works. So, as of now, I am pursuing other ideas of achieving the goals of QOTR. The best candidate I see for that is using RSA public/private keys. Meanwhile, I'll advice against using QOTR.**
+
 ====
 QOTR
 ====
