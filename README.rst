@@ -153,7 +153,7 @@ Building
 Hosting
 =======
 
-QOTR hosting has been tested on heroku (free SSL!). Add the git remote provided
+QOTR hosting has been tested on heroku. Add the git remote provided
 in your heroku application to your local clone:
 
 .. code ::
