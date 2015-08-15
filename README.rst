@@ -1,4 +1,17 @@
-**Based on the comments on public forums, I have realized that there are issues with how the current key transfer works. So, as of now, I am pursuing other ideas of achieving the goals of QOTR. The best candidate I see for that is using RSA public/private keys. Meanwhile, I'll advice against using QOTR.**
+**Project discontinued**
+
+The project is now scraped. What I was trying to do with QOTR is inherently what
+makes it insecure. When I say encryption happens in the browser, and the servers
+can't read the text. This tries to give you a assurance that the server getting
+compromised will mean that the text you send couldn't be decrypted by it.
+But when we are allowing for a server to be compromised, it also means the
+static files it servers could be compromised hence making the encryption in
+the browser idea irrelevant.
+
+What will work instead is distribution of a signed plugin which talks to a chat
+server. The chat server being compromised here doesn't impact the client's
+integrity. A great implementation of this already exists as cryptocat_.
+
 
 ====
 QOTR
@@ -175,3 +188,4 @@ Bugs
 Probably lots. Please send us reports on the Github `issue tracker <https://github.com/crodjer/qotr/issues>`_. Patches are welcome too.
 
 .. _forge: https://github.com/digitalbazaar/forge
+.. _cryptocat: https://crypto.cat/
